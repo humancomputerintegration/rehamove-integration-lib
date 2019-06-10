@@ -1,1 +1,16 @@
 # rehamove-integration-lib
+
+
+# Licensing
+
+This project is licensed via Creative Commons Attribution-NonCommercial 2.0 Generic (CC BY-NC 2.0). 
+
+This means:
+* You cannot use it for commercial purposes without asking us.
+* You can' only use this for non-commercial purposes crediting our work (link to https://github.com/humancomputerintegration/rehamove-integration-lib or lab.lopes.org/rehamove.html).
+* Otherwise, you can share it, you can remix it, etc.
+
+Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
+
+
+
