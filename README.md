@@ -1,4 +1,4 @@
-# rehamoveIntegrationLib: Python and C# Extensions for RehaMove 3
+# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3
 
 This is the **rehamoveIntegrationLib**, a collection of libraries that interface with the RehaMove 3 medical device.
 
