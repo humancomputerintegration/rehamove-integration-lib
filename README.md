@@ -1,11 +1,11 @@
 # Rehamove Integration Lib: Python and C# Extensions for RehaMove 3
 
-This is the **rehamoveIntegrationLib**, a collection of libraries that interface with the RehaMove 3 medical device.
+This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device.
 
 ![image](extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
 
-**What does this do?** The RehaMove 3 is a medical device that sends out electrical signals, which can be used clinically and in research, e.g. by doing functional electrical stimulation (FES) and/or electrical muscle stimulation (EMS). Existing documentation is provided by the manufacturer Hasomed to control the RehaMove via C code. **Our libraries extend this functionality to Python and C#**, allowing the user to send commands in these other languages. This can be used for rapid prototyping, and/or integration with engines such as Unity3D.
+**What does this do?** The RehaMove 3 is a medical device that sends out electrical signals, which can be used clinically and in research, e.g. by doing functional electrical stimulation (FES) and/or electrical muscle stimulation (EMS). Existing documentation is provided by the manufacturer Hasomed to control the RehaMove via C code using a precompiled C library. **Instead, our libraries extend this functionality to Python and C#**, allowing the user to send commands in these other programming languages. This can be used for rapid prototyping, and/or integration with engines such as Unity3D.
 
 ## 0. A must read before using
 
@@ -22,7 +22,7 @@ We support several versions of the library for different systems. After download
 
 #### 1.1.1 Linux
 
-Download [this directory](builds/python/linux_amd64/).
+Download [this directory for 64-bit OS](builds/python/linux_amd64/) or [this directory for ARM](builds/python/linux_ARM/).
 
 For Linux, we support two versions (for AMD64 and for ARM architectures). Make sure you have the following files:
 
@@ -32,6 +32,8 @@ For Linux, we support two versions (for AMD64 and for ARM architectures). Make s
 
 #### 1.1.2 Windows
 
+Download [this directory](builds/python/windows_amd64/).
+
 For Windows, we support AMD64 architectures. Make sure you have the following files:
 
 1. `rehamove.py`
@@ -39,19 +41,24 @@ For Windows, we support AMD64 architectures. Make sure you have the following fi
 3. `_rehamovelib.pyd`
 
 #### 1.1.3 MacOS
-We currently do not support MacOS. Come back soon!
 
-### 1.2 C\# (for Unity3D)
+MacOS support has not been tested but we expect this to work. We are working on it. If you have tested, please report to us.
 
-We support C# for Unity3D integration on Windows. Make sure you have the following files:
+### 1.2 C\# (for Unity3D in Windows)
+
+Download [this directory](builds/csharp).
+
+We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
 
 1. `rehamovelib.dll`
 2. `UnityRehamove.dll`
 
 After downloading the files, **move the downloaded files into the Assets folder of your Unity project**.
 
+Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. 
 
-## 2. How to use
+
+## 2. Controlling the Rehamove via our library
 
 This section explains how to use our libraries, including example code demonstrating imports and calling the library functions.
 
@@ -146,10 +153,9 @@ Differences:
 * `r.battery()`: Queries the device for the battery percentage. Currently this is returned as a value (integer).
 * `r.close()`: Closes the port (assuming that `r` is a Rehamove object created when opening the port. Unlike in the Python library, the port **does NOT automatically close** when the C# execution ends. The port must be manually closed with this function. It is possible to use Unity3D's `onApplicationQuit()` method to call this function automatically when the Unity3D program ends.
 
-## 4. How to build/compile
+## 4. How to build/compile our libraries from source
 
-This section is for developers interested in building/compiling from source. This project is compiled and linked with the Hasomed's Rehamove library (a precompiled C library). Our libraries were developed and compiled with version 3.2.4. You can find their latest version [here](https://www.rehamove.com/fileadmin/user_upload/RehaMove/ScienceMode/smpt_rm3_V3.2.4b.zip). 
-
+This section is for developers interested in building/compiling our libraries from source. This project is compiled and linked with the Hasomed's Rehamove library (a precompiled C library). Our libraries were developed and compiled with version 3.2.4. You can find their latest version [here](https://www.rehamove.com/fileadmin/user_upload/RehaMove/ScienceMode/smpt_rm3_V3.2.4b.zip). 
 
 In order to interface with Hasomed's precompiled C library our project uses [SWIG](http://www.swig.org/). 
 
@@ -317,7 +323,7 @@ This is a list of known bugs/features in our libraries that we hope to fix and/o
 
 This library was made by Aaron Tang with the help of Pedro Lopes. Feel free to contact us if you have any questions, comments, or suggestions!
 
-## 7. LICENSE
+## 7. License (not for commercial use)
 
 This project is licensed via Creative Commons Attribution-NonCommercial 2.0 Generic (CC BY-NC 2.0). 
 
