@@ -22,6 +22,8 @@ We support several versions of the library for different systems. After download
 
 #### 1.1.1 Linux
 
+Download [this directory](builds/python/linux_amd64/).
+
 For Linux, we support two versions (for AMD64 and for ARM architectures). Make sure you have the following files:
 
 1. `rehamove.py`
