@@ -62,8 +62,8 @@ Theoretically our build might work also on Linux and Mac; if you got the sharp t
 
 This section explains how to use our libraries, including example code demonstrating imports and calling the library functions.
 
-The following is a video tutorial:
-[insert video here]
+See our video tutorial:
+[![Video Tutorial for using our libraries](extra/video.png)](https://youtu.be/IyL0C_fEE2A)
 
 ### 2.1 Python
 
