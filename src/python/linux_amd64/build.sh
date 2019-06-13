@@ -20,6 +20,5 @@ mv rehamovelib.py $build_directory
 mv _rehamovelib.so $build_directory
 
 echo "rehamove-integration-lib: Cleaning up intermediate build files"
-rm *.pyc
 rm *.o
 rm rehamovelib_wrap.c
