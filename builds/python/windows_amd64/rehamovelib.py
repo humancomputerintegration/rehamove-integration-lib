@@ -107,16 +107,19 @@ _rehamovelib.Rehamove_swigregister(Rehamove)
 def open_port(port_name):
     return _rehamovelib.open_port(port_name)
 
-def close_port(r):
-    return _rehamovelib.close_port(r)
-
 def pulse(r, channel, current, pulse_width):
     return _rehamovelib.pulse(r, channel, current, pulse_width)
 
+def close_port(r):
+    return _rehamovelib.close_port(r)
+
+def get_battery(r):
+    return _rehamovelib.get_battery(r)
+
+def battery_request(r):
+    return _rehamovelib.battery_request(r)
+
 def custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15):
     return _rehamovelib.custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15)
-
-def battery(r):
-    return _rehamovelib.battery(r)
 
 
