@@ -129,19 +129,19 @@ This section describes the list of functions that our libraries currently suppor
 
 ### 3.1 Python
 
-* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is needed to invoke the other functions.** Takes in one argument (the port_name, for example **/dev/ttyUSB0**). Returns a Rehamove object. This function automatically opens the port.
+* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is needed to invoke the other functions.** Takes in one argument (the port_name, for example **/dev/ttyUSB0**). Returns a Rehamove object. This function automatically opens the port. If an error occurs during device initialization, we return a NULL object, that should not be able to run any of the other functions. If this happens, it is best to retry initialization and store in a different variable.
 
 * `r.pulse(channel_name, current, pulse_width)`: Sends a single pulse. Takes in three arguments:
-	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`)
+	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
 	* the current intensity (mA)
 	* the length of the pulse (us)
 
 * `r.custom_pulse(channel_name, points_array)`:
 Sends a single pulse with a custom waveform. Takes in two arguments:
-	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`)
+	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
 	* an array of tuples, each tuple having two elements (a current (mA), and a pulse_width (us)). The custom waveform can only support 16 points. Sending an array with more than 16 points will only execute the first 16 points, and sending an array with less than 16 points will automatically create empty points (0.0, 0) to fill in the leftover number.
 
-* `r.battery()`: Queries the device for the battery percentage. Currently this is printed rather than returned as a value.
+* `r.battery()`: Queries the device for the battery percentage. Prints the battery value, and also returns an integer that represents the battery percentage.
 
 * The connection port **automatically closes** open exiting the Python application.
 
@@ -333,3 +333,12 @@ This means:
 * Otherwise, you can share it, you can remix it, etc.
 
 Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
+
+## 8. Update History
+
+8-19-2019 Update
+- Fixed issue regarding inconsistent pulses when pulse commands are sent in rapid succession.
+- Fixed memory-related issue requiring needing to open and close ports repeatedly.
+- Added error handling for unsuccessful opening/closing the port, and unsuccessful method calls. Failure to open the port and/or initialize the device will return a NULL Rehamove object that should not be able to run any of the class methods.
+- Fixed issue with stalling while waiting for a response for a battery query -> user now sees a timeout.
+- Allow the output channels to be called in any case (e.g. "BLUE", "bLuE", or "blue")
