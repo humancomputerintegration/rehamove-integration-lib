@@ -16,9 +16,9 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 ## 1. How to install
 
-### 1.1 Python
+### 1.1 Python (2 and 3)
 
-We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from).
+We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
 
 #### 1.1.1 Linux
 
@@ -315,9 +315,10 @@ Both of the output DLLs (`rehamovelib.dll` and `UnityRehamove.dll`) can be impor
 
 This is a list of known bugs/features in our libraries that we hope to fix and/or implement soon. Please feel free to contact us if you find more!
 
-- Sparse exception handling. Python versions will see printed statements for unsuccessful port connections, etc., but in general error messages can be more comprehensive and standard in both Python and C#.
+- Main bug: timing is inconsistent, some pulses are being dropped. Fix is coming! (Fixed in Python, will fix in C#)
+- Sparse exception handling (fixed in Python, will fix in C#)
 - For C# (on Unity3D), the port does not automatically close. Please use Unity3D's `onApplicationQuit()` method to call our library's `close()` function.
-- Our library's `battery()` function stalls the program if the query to the RehaMove is unsuccessful.
+- Sometimes when removing and replugging in the USB port connecting to the Rehamove, the next time a Rehamove object is initialized (i.e. with **r = Rehamove("COM3")**) that initialization fails -> but subsequent initializations should succeed. Can be worked around by simply trying the initialization again.
 
 ## 6. Contact
 
