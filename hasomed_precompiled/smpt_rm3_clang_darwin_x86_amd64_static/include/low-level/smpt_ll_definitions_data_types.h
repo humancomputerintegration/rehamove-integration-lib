@@ -83,7 +83,7 @@ typedef struct /* Ll_channel_config */
     Smpt_Channel channel;      /**< [0 - 3] Channel number \n \see Smpt_Channel */
     bool modify_demux;         /**< Not yet implemented */
     uint8_t number_of_points;  /**< [1 - 16] Number of points */
-    Smpt_ll_point points[Smpt_Length_Points]; /**< Stimulation points \see Smpt_Ll_point */
+    Smpt_ll_point points[Smpt_Length_Points]; /**< Stimulation points \see Smpt_point */
     uint8_t demux_config[Smpt_Length_Demux_Config]; /**< Not yet implemented */
     uint8_t demux_length;                           /**< Not yet implemented */
     uint8_t packet_number;           /**< [0 - 63] Packet number */

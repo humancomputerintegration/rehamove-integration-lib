@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-#if defined(_WIN32) || defined(__linux__)
+#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 
 #include "smpt_ll_definitions.h"
 #include "smpt_messages.h"

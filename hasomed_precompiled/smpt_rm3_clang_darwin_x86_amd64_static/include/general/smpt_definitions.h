@@ -21,7 +21,7 @@ typedef enum /* Smpt_General */
                                               compatibility */
     Smpt_Library_Version_Minor     = 2,  /**< Used for adding commands, parameters\n
                                               The interface is backward compatible. */
-    Smpt_Library_Version_Revision  = 4   /**< Used for bugfixes, no interface changes */
+    Smpt_Library_Version_Revision  = 5   /**< Used for bugfixes, no interface changes */
 
 } Smpt_General; /**< \enum Smpt_General General protocol and library constants */
 
