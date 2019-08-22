@@ -130,7 +130,9 @@ This section describes the list of functions that our libraries currently suppor
 
 ### 3.1 Python
 
-* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is needed to invoke the other functions.** Takes in one argument (the port_name, for example **/dev/ttyUSB0**). Returns a Rehamove object. This function automatically opens the port. If an error occurs during device initialization, we return a NULL object, that should not be able to run any of the other functions. If this happens, it is best to retry initialization and store in a different variable.
+* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is the object upon which you invoke the other functions.** The call for `Rehamove()` takes in one argument, which is the port_name (for example **/dev/ttyUSB0** on Linux or COM3 on Windows, etc.). It returns a `Rehamove` object, so (as mentioned) remember to assign it. The creation of a `Rehamove` object automatically opens the port, unless an error occurs while opening the port (e.g., wrong port name, etc). 
+
+* Error handling when creating new `Rehamove` object: we currently do not have exception handling but we have error printing. Thus, your best option to handle this in code is to test whether your variable that holds the object is `None` (e.g., `if r == None`). One nice way to have a `while` loop that attempts connections until the return object is not  `None` -- this allows you to have apython script that infitely tries to get the port to connect to the device. 
 
 * `r.pulse(channel_name, current, pulse_width)`: Sends a single pulse. Takes in three arguments:
 	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
