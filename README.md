@@ -2,7 +2,7 @@
 
 This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device.
 
-![image](extra/video.png)
+![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
 
 **What does this do?** The RehaMove 3 is a medical device that sends out electrical signals, which can be used clinically and in research, e.g. by doing functional electrical stimulation (FES) and/or electrical muscle stimulation (EMS). Existing documentation is provided by the manufacturer Hasomed to control the RehaMove via C code using a precompiled C library. **Instead, our libraries extend this functionality to Python and C#**, allowing the user to send commands in these other programming languages. This can be used for rapid prototyping, and/or integration with engines such as Unity3D.
@@ -22,7 +22,7 @@ We support several versions of the library for different systems. After download
 
 #### 1.1.1 Linux
 
-Download [this directory for 64-bit OS](builds/python/linux_amd64/) or [this directory for ARM](builds/python/linux_ARM/).
+Download [this directory for 64-bit OS](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) or [this directory for ARM](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM/).
 
 For Linux, we support two versions (for AMD64 and for ARM architectures). Make sure you have the following files:
 
@@ -32,7 +32,7 @@ For Linux, we support two versions (for AMD64 and for ARM architectures). Make s
 
 #### 1.1.2 Windows
 
-Download [this directory](builds/python/windows_amd64/).
+Download [this directory](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/).
 
 For Windows, we support AMD64 architectures. Make sure you have the following files:
 
@@ -46,7 +46,7 @@ MacOS support has not been tested but we expect this to work. We are working on 
 
 ### 1.2 C\# (for Unity3D in Windows)
 
-Download [this directory](builds/csharp).
+Download [this directory](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
 
 We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
 
@@ -63,7 +63,7 @@ Theoretically our build might work also on Linux and Mac; if you got the sharp t
 This section explains how to use our libraries, including example code demonstrating imports and calling the library functions.
 
 See our video tutorial:
-[![Video Tutorial for using our libraries](extra/video.png)](https://youtu.be/IyL0C_fEE2A)
+[![Video Tutorial for using our libraries](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)](https://youtu.be/IyL0C_fEE2A)
 
 ### 2.1 Python
 
@@ -343,3 +343,7 @@ Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 - Added error handling for unsuccessful opening/closing the port, and unsuccessful method calls. Failure to open the port and/or initialize the device will return a NULL Rehamove object that should not be able to run any of the class methods.
 - Fixed issue with stalling while waiting for a response for a battery query -> user now sees a timeout.
 - Allow the output channels to be called in any case (e.g. "BLUE", "bLuE", or "blue")
+
+8-22-2019 Update
+- Added callable function version() to get the version of the Python-side and C-side of the current library.
+- Allow the output channels to be called with integers as well (e.g. 0 = red, 1 = blue, 2 = gray1, 3 = gray2)
