@@ -1,4 +1,4 @@
-# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3
+# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3 (v1.5)
 
 This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
@@ -338,11 +338,11 @@ Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 
 ## 8. Update History
 
-8-22-2019
+8-22-2019 version 1.5 is out
 - Added callable function version() to get the version of the Python-side and C-side of the current library.
 - Allow the output channels to be called with integers as well (e.g. 0 = red, 1 = blue, 2 = gray1, 3 = gray2)
 
-8-19-2019
+8-19-2019 (no version names)
 - Fixed issue regarding inconsistent pulses when pulse commands are sent in rapid succession.
 - Fixed memory-related issue requiring needing to open and close ports repeatedly.
 - Added error handling for unsuccessful opening/closing the port, and unsuccessful method calls. Failure to open the port and/or initialize the device will return a NULL Rehamove object that should not be able to run any of the class methods.
