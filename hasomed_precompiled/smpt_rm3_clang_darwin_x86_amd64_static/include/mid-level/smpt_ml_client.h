@@ -17,7 +17,7 @@ extern "C" {
 /*******************************************************************************
  Section Windows and Linux
 *******************************************************************************/
-#if defined(_WIN32) || defined(__linux__)
+#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 
 #include "smpt_definitions.h"
 #include "smpt_ml_definitions_data_types.h"

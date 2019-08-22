@@ -381,7 +381,7 @@ typedef struct
 
 typedef struct /* Smpt_device */
 {
-#if defined(_WIN32) || defined(__linux__)
+#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
     uint32_t packet_length;                       /**< ... */
     uint8_t packet[Smpt_Length_Max_Packet_Size];  /**< ... */
 
@@ -390,11 +390,11 @@ typedef struct /* Smpt_device */
 #ifdef _WIN32
     HANDLE serial_port_handle_;                   /**< ... */
 #endif
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
     int serial_port_descriptor;
 #endif
     int8_t current_packet_number;                 /**< ... */
-#if defined(_WIN32) || defined(__linux__)
+#if defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
     char serial_port_name[Smpt_Length_Serial_Port_Chars];                    /**< ... */
     Packet_input_buffer packet_input_buffer;      /**< ... */
     uint8_t packet_input_buffer_data [Smpt_Length_Packet_Input_Buffer_Rows *
