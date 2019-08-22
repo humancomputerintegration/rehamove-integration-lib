@@ -20,11 +20,15 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
 
-#### 1.1.1 Linux
+#### 1.1.1 Linux (both AMD64 and ARM v7+) or MacOS (AMD64, untested for now)
 
-Download [this directory for 64-bit OS](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) or [this directory for ARM](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM/).
+* [Nighly Linux AMD64 zip](lab.plopes.org/rehamove/python-linux_amd64.zip) 
+* [Nighly Linux ARM V7+ zip](lab.plopes.org/rehamove/python-linux_ARM.zip) 
+* [Most-recent source code for AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) 
+* [Most-recent source code for ARM V7+](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM) 
+* MacOS is untested now, we will update soon.
 
-For Linux, we support two versions (for AMD64 and for ARM architectures). Make sure you have the following files:
+On Linux (or MacOS, which is untested for now) make sure you have the following files (for your desired architecture, either AMD64 or ARM V7+):
 
 1. `rehamove.py`
 2. `rehamovelib.py`
@@ -32,21 +36,19 @@ For Linux, we support two versions (for AMD64 and for ARM architectures). Make s
 
 #### 1.1.2 Windows
 
-Download [this directory](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/).
+* [Nighly Windows 64-bit (only) zip](lab.plopes.org/rehamove/python-windows_amd64.zip) 
+* [Most-recent source code for Windows 64-bit (only)](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/) 
 
-For Windows, we support AMD64 architectures. Make sure you have the following files:
+For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the following files:
 
 1. `rehamove.py`
 2. `rehamovelib.py`
 3. `_rehamovelib.pyd`
 
-#### 1.1.3 MacOS
-
-MacOS support has not been tested but we expect this to work. We are working on it. If you have tested, please report to us.
-
 ### 1.2 C\# (for Unity3D in Windows)
 
-Download [this directory](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
+* [Nighly Windows 64-bit (only) zip for C#](lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
+* [Most-recent source code for Windows 64-bit (only) C\#](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
 
 We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
 
@@ -55,8 +57,7 @@ We support C# for Unity3D integration on Windows-only. Make sure you have the fo
 
 After downloading the files, **move the downloaded files into the Assets folder of your Unity project**.
 
-Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. 
-
+(Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. )
 
 ## 2. Controlling the Rehamove via our library
 
@@ -337,13 +338,14 @@ Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 
 ## 8. Update History
 
-8-19-2019 Update
+8-22-2019
+- Added callable function version() to get the version of the Python-side and C-side of the current library.
+- Allow the output channels to be called with integers as well (e.g. 0 = red, 1 = blue, 2 = gray1, 3 = gray2)
+
+8-19-2019
 - Fixed issue regarding inconsistent pulses when pulse commands are sent in rapid succession.
 - Fixed memory-related issue requiring needing to open and close ports repeatedly.
 - Added error handling for unsuccessful opening/closing the port, and unsuccessful method calls. Failure to open the port and/or initialize the device will return a NULL Rehamove object that should not be able to run any of the class methods.
 - Fixed issue with stalling while waiting for a response for a battery query -> user now sees a timeout.
 - Allow the output channels to be called in any case (e.g. "BLUE", "bLuE", or "blue")
 
-8-22-2019 Update
-- Added callable function version() to get the version of the Python-side and C-side of the current library.
-- Allow the output channels to be called with integers as well (e.g. 0 = red, 1 = blue, 2 = gray1, 3 = gray2)
