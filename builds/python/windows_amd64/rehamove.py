@@ -2,12 +2,20 @@ import rehamovelib
 
 class Rehamove:
 
+	current_version = "v1.5"
+
 	channel0 = ['r', 'red']
 	channel1 = ['b', 'blue']
-	channel2 = ['g', 'gray', 'grey', 'black']
+	channel2 = ['g1', 'gray1', 'grey1', 'black']
+	channel3 = ['g2', 'gray2', 'grey2', 'white']
 
 	def __init__(self, port_name):
 		self.rehamove = rehamovelib.open_port(port_name)
+
+	def version(self):
+		c_version = rehamovelib.get_version()
+		print("Rehamove Version: Python-side " + str(Rehamove.current_version) + ", C-side " + str(c_version))
+		return Rehamove.current_version
 
 	def get_channel(self, channel):
 		chosen_channel = channel
@@ -19,10 +27,12 @@ class Rehamove:
 				chosen_channel = 1
 			elif channel in Rehamove.channel2:
 				chosen_channel = 2
+			elif channel in Rehamove.channel3:
+				chosen_channel = 3
 			else:
 				chosen_channel = 0 # Default
 		elif isinstance(channel, int):
-			if channel < 0 and channel > 2:
+			if channel < 0 and channel > 3:
 				chosen_channel = 0 # Default
 		else:
 			chosen_channel = 0
