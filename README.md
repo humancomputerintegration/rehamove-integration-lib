@@ -1,6 +1,6 @@
 # Rehamove Integration Lib: Python and C# Extensions for RehaMove 3
 
-This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device.
+This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
 ![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
