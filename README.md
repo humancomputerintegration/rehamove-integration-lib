@@ -22,8 +22,8 @@ We support several versions of the library for different systems. After download
 
 #### 1.1.1 Linux (both AMD64 and ARM v7+) or MacOS (AMD64, untested for now)
 
-* [Nighly Linux AMD64 zip](lab.plopes.org/rehamove/python-linux_amd64.zip) 
-* [Nighly Linux ARM V7+ zip](lab.plopes.org/rehamove/python-linux_ARM.zip) 
+* [Nighly Linux AMD64 zip](https://lab.plopes.org/rehamove/python-linux_amd64.zip) 
+* [Nighly Linux ARM V7+ zip](https://lab.plopes.org/rehamove/python-linux_ARM.zip) 
 * [Most-recent source code for AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) 
 * [Most-recent source code for ARM V7+](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM) 
 * MacOS is untested now, we will update soon.
@@ -36,7 +36,7 @@ On Linux (or MacOS, which is untested for now) make sure you have the following 
 
 #### 1.1.2 Windows
 
-* [Nighly Windows 64-bit (only) zip](lab.plopes.org/rehamove/python-windows_amd64.zip) 
+* [Nighly Windows 64-bit (only) zip](https://lab.plopes.org/rehamove/python-windows_amd64.zip) 
 * [Most-recent source code for Windows 64-bit (only)](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/) 
 
 For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the following files:
@@ -47,7 +47,7 @@ For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the
 
 ### 1.2 C\# (for Unity3D in Windows)
 
-* [Nighly Windows 64-bit (only) zip for C#](lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
+* [Nighly Windows 64-bit (only) zip for C#](https://lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
 * [Most-recent source code for Windows 64-bit (only) C\#](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
 
 We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
