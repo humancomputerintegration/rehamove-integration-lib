@@ -241,7 +241,7 @@ Some notes:
 * Now, let's build the python2-based rehalib for MacOS. Type `./build-python2.sh` If you'd like to build for python3, use `./build-python3.sh`.
 * Note that this most likely will fail unless you happen to have exactly the same path to the `Python.h` file. So, do as follows:
   * First locate where your `Python.h` file using, for instance, `locate Python.h`
-  * Now, edit the `./build-python2.sh` or `./build-python3.sh` (depending on which python version you are building for) and change $python_include_path to point to your directory. 
+  * Now, edit the `./build-python2.sh` or `./build-python3.sh` (depending on which python version you are building for) and change $python_include_path to point the directory and NOT to the file itself. 
   * Run build. 
 
 Notes for MacOS build process:
