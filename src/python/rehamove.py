@@ -2,20 +2,48 @@ import rehamovelib
 
 class Rehamove:
 
-	current_version = "v1.5"
+	current_version = "v1.6"
 
 	channel0 = ['r', 'red']
 	channel1 = ['b', 'blue']
 	channel2 = ['g1', 'gray1', 'grey1', 'black']
 	channel3 = ['g2', 'gray2', 'grey2', 'white']
 
+	MODE_LOW_LEVEL = 0
+	MODE_MID_LEVEL = 1
+
 	def __init__(self, port_name):
 		self.rehamove = rehamovelib.open_port(port_name)
+		self.mode = 0
 
 	def version(self):
 		c_version = rehamovelib.get_version()
 		print("Rehamove Version: Python-side " + str(Rehamove.current_version) + ", C-side " + str(c_version))
 		return Rehamove.current_version
+
+	def get_mode(self):
+		result = rehamovelib.get_mode(self.rehamove)
+		return result
+
+	def get_current(self):
+		result = rehamovelib.get_current(self.rehamove)
+		return result
+
+	def get_pulse_width(self):
+		result = rehamovelib.get_pulse_width(self.rehamove)
+		return result
+
+	def info(self):
+		mode = self.get_mode()
+		current = self.get_current()
+		pulse_width = self.get_pulse_width()
+
+		if mode == Rehamove.MODE_LOW_LEVEL:
+			return "Rehamove device in low-level mode. Mid-level pulse is set to {} mA and {} us.".format(current, pulse_width)
+		elif mode == Rehamove.MODE_MID_LEVEL:
+			return "Rehamove device in mid-level mode. Mid-level pulse is set to {} mA and {} us.".format(current, pulse_width)
+		else:
+			return "Rehamove info() ERROR!"
 
 	def get_channel(self, channel):
 		chosen_channel = channel
@@ -115,6 +143,93 @@ class Rehamove:
 			battery_level = rehamovelib.get_battery(self.rehamove)
 			print("python Rehamove battery(): " + str(battery_level) + "%")
 			return battery_level
+
+	def change_mode(self, mode):
+		if self.rehamove == None:
+			print("python Rehamove change_mode() ERROR! Rehamove object does not exist.")
+			return -1
+		result = rehamovelib.change_mode(self.rehamove, mode)
+		if result != 0:
+			print("python Rehamove change_mode() ERROR!")
+			return -1
+		else:
+			print("python Rehamove change_mode(): Changed mode to " + str(mode) + ".")
+			self.mode = mode
+			return 0
+
+	def set_pulse(self, current, pulse_width):
+		if self.rehamove == None:
+			print("python Rehamove set_pulse() ERROR! Rehamove object does not exist.")
+			return -1
+		result = rehamovelib.set_pulse_data(self.rehamove, current, pulse_width)
+		if result != 0:
+			print("python Rehamove set_pulse() ERROR!")
+			return -1
+		else:
+			print("python Rehamove set_pulse(): Set pulse current to " + str(current) + " and pulse width to " + str(pulse_width) + ".")
+			return 0
+
+	def run(self, channel, period, total_milliseconds):
+		if self.rehamove == None:
+			print("python Rehamove run() ERROR! Rehamove object does not exist.")
+			return -1
+		if self.mode != Rehamove.MODE_MID_LEVEL:
+			print("python Rehamove run() ERROR! Mode must be set to mid-level.")
+			return -1
+		chosen_channel = self.get_channel(channel)
+		result = rehamovelib.run(self.rehamove, chosen_channel, period, total_milliseconds)
+		if result != 0:
+			print("python Rehamove run() ERROR!")
+			return -1
+		else:
+			print("python Rehamove run(): Completed.")
+			return 0
+
+	def start(self, channel, period):
+		if self.rehamove == None:
+			print("python Rehamove start() ERROR! Rehamove object does not exist.")
+			return -1
+		if self.mode != Rehamove.MODE_MID_LEVEL:
+			print("python Rehamove start() ERROR! Mode must be set to mid-level.")
+			return -1
+		chosen_channel = self.get_channel(channel)
+		result = rehamovelib.midlevel_start(self.rehamove, chosen_channel, period)
+		if result != 0:
+			print("python Rehamove start() ERROR!")
+			return -1
+		else:
+			print("python Rehamove start(): Completed.")
+			return 0
+
+	def update(self):
+		if self.rehamove == None:
+			print("python Rehamove update() ERROR! Rehamove object does not exist.")
+			return -1
+		if self.mode != Rehamove.MODE_MID_LEVEL:
+			print("python Rehamove update() ERROR! Mode must be set to mid-level.")
+			return -1
+		result = rehamovelib.midlevel_update(self.rehamove)
+		if result != 0:
+			print("python Rehamove update() ERROR!")
+			return -1
+		else:
+			print("python Rehamove update(): Completed.")
+			return 0
+
+	def end(self):
+		if self.rehamove == None:
+			print("python Rehamove end() ERROR! Rehamove object does not exist.")
+			return -1
+		if self.mode != Rehamove.MODE_MID_LEVEL:
+			print("python Rehamove end() ERROR! Mode must be set to mid-level.")
+			return -1
+		result = rehamovelib.midlevel_end(self.rehamove)
+		if result != 0:
+			print("python Rehamove end() ERROR!")
+			return -1
+		else:
+			print("python Rehamove end(): Completed.")
+			return 0
 
 	def __del__(self):
 		# Only close the port if we have a Rehamove object to close
