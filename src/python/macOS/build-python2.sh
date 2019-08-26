@@ -1,7 +1,6 @@
 #!/bin/bash 
 build_directory=../../../builds/python2/macOS
 precompiled_directory=../../../hasomed_precompiled/smpt_rm3_clang_darwin_x86_amd64_static
-python_executable_path=`(which python)`
 python_include_path=/System/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/
 
 echo "Setting up your environment, check the lines below for consistency:"
@@ -22,7 +21,6 @@ echo "rehamove-integration-lib: Compiling SWIG-generated wrapper"
 gcc -c rehamovelib_wrap.c -fPIC -I $precompiled_directory/include/low-level/ -I $precompiled_directory/include/general/ -I $python_include_path ;
 
 echo "rehamove-integration-lib: Linking to generate shared library"
-#ld -shared rehamovelib.o rehamovelib_wrap.o -o _rehamovelib.so -L $precompiled_directory/lib/ -lsmpt
 ld -dylib -bundle -flat_namespace -undefined suppress rehamovelib.o rehamovelib_wrap.o -o _rehamovelib.so -L  $precompiled_directory/lib/ -lsmpt
 
 echo "rehamove-integration-lib: Moving built files into the builds directory"

@@ -234,7 +234,21 @@ Some notes:
 * When linking, we use the `-L` flag we include the path to the precompiled C library.
 * In the linking step, we now needed to also link to a GCC library that handles floating point numbers. This could possibly be because the ARM and AMD64 architectures handle floating point calculations differently.
 
-#### 4.1.3 Python on Windows (also 64-bit)
+#### 4.1.3 Python on MacOS (64 bit architectures, i.e., AMD64)
+
+* First find the source folder for mac, this is at `src/python/macOS`.
+* Then, let's install our dependencies, we have included a script for that. Simply run `./install_dependencies.sh` (for now all this does is install `swig` using `homebrew` as follows `brew install swig` -- this requires you to have `homebrew`). 
+* Now, let's build the python2-based rehalib for MacOS. Type `./build-python2.sh` If you'd like to build for python3, use `./build-python3.sh`.
+* Note that this most likely will fail unless you happen to have exactly the same path to the `Python.h` file. So, do as follows:
+  * First locate where your `Python.h` file using, for instance, `locate Python.h`
+  * Now, edit the `./build-python2.sh` or `./build-python3.sh` (depending on which python version you are building for) and change $python_include_path to point to your directory. 
+  * Run build. 
+
+Notes for MacOS build process:
+* The linking process is slighly different in MacOS, in fact you can see the call is `ld -dylib -bundle -flat_namespace -undefined suppress rehamovelib.o rehamovelib_wrap.o -o _rehamovelib.so -L  $precompiled_directory/lib/ -lsmpt` 
+* Currently it generates a warning stating that `min version was not specified`, this is a warning and seems to compile fine with it. 
+
+#### 4.1.4 Python on Windows (also 64-bit)
 
 We tested our build here on a Windows 10 system. The starting files are the same as in Python for Linux AMD64.
 
