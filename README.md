@@ -20,21 +20,32 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
 
-#### 1.1.1 Linux (both AMD64 and ARM v7+) or MacOS (AMD64, untested for now)
+#### 1.1.1 Linux (both AMD64 and ARM v7+) 
 
 * [Nighly Linux AMD64 zip](https://lab.plopes.org/rehamove/python-linux_amd64.zip) 
 * [Nighly Linux ARM V7+ zip](https://lab.plopes.org/rehamove/python-linux_ARM.zip) 
 * [Most-recent source code for AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) 
 * [Most-recent source code for ARM V7+](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM) 
-* MacOS is untested now, we will update soon.
 
-On Linux (or MacOS, which is untested for now) make sure you have the following files (for your desired architecture, either AMD64 or ARM V7+):
+On Linux make sure you have the following files (for your desired architecture, either AMD64 or ARM V7+):
 
 1. `rehamove.py`
 2. `rehamovelib.py`
 3. `_rehamovelib.so`
 
-#### 1.1.2 Windows
+#### 1.1.2 MacOS (AMD64)
+
+* [Nighly MacOS 64 zip](https://lab.plopes.org/rehamove/python-linux_mac64.zip) 
+* [Most-recent source code for MacOS AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python2/macOS/) 
+
+On MacOS make sure you have the following files (only for 64 bit machines):
+
+1. `rehamove.py`
+2. `rehamovelib.py`
+3. `_rehamovelib.so`
+
+
+#### 1.1.3 Windows
 
 * [Nighly Windows 64-bit (only) zip](https://lab.plopes.org/rehamove/python-windows_amd64.zip) 
 * [Most-recent source code for Windows 64-bit (only)](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/) 
