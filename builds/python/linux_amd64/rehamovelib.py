@@ -95,56 +95,116 @@ except __builtin__.Exception:
         pass
     _newclass = 0
 
-class Rehamove(_object):
+class RehamoveDevice(_object):
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Rehamove, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, RehamoveDevice, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Rehamove, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, RehamoveDevice, name)
     __repr__ = _swig_repr
-    __swig_setmethods__["port_name"] = _rehamovelib.Rehamove_port_name_set
-    __swig_getmethods__["port_name"] = _rehamovelib.Rehamove_port_name_get
+    __swig_setmethods__["device"] = _rehamovelib.RehamoveDevice_device_set
+    __swig_getmethods__["device"] = _rehamovelib.RehamoveDevice_device_get
     if _newclass:
-        port_name = _swig_property(_rehamovelib.Rehamove_port_name_get, _rehamovelib.Rehamove_port_name_set)
-    __swig_setmethods__["device"] = _rehamovelib.Rehamove_device_set
-    __swig_getmethods__["device"] = _rehamovelib.Rehamove_device_get
+        device = _swig_property(_rehamovelib.RehamoveDevice_device_get, _rehamovelib.RehamoveDevice_device_set)
+    __swig_setmethods__["battery"] = _rehamovelib.RehamoveDevice_battery_set
+    __swig_getmethods__["battery"] = _rehamovelib.RehamoveDevice_battery_get
     if _newclass:
-        device = _swig_property(_rehamovelib.Rehamove_device_get, _rehamovelib.Rehamove_device_set)
+        battery = _swig_property(_rehamovelib.RehamoveDevice_battery_get, _rehamovelib.RehamoveDevice_battery_set)
+    __swig_setmethods__["mode"] = _rehamovelib.RehamoveDevice_mode_set
+    __swig_getmethods__["mode"] = _rehamovelib.RehamoveDevice_mode_get
+    if _newclass:
+        mode = _swig_property(_rehamovelib.RehamoveDevice_mode_get, _rehamovelib.RehamoveDevice_mode_set)
+    __swig_setmethods__["current"] = _rehamovelib.RehamoveDevice_current_set
+    __swig_getmethods__["current"] = _rehamovelib.RehamoveDevice_current_get
+    if _newclass:
+        current = _swig_property(_rehamovelib.RehamoveDevice_current_get, _rehamovelib.RehamoveDevice_current_set)
+    __swig_setmethods__["pulse_width"] = _rehamovelib.RehamoveDevice_pulse_width_set
+    __swig_getmethods__["pulse_width"] = _rehamovelib.RehamoveDevice_pulse_width_get
+    if _newclass:
+        pulse_width = _swig_property(_rehamovelib.RehamoveDevice_pulse_width_get, _rehamovelib.RehamoveDevice_pulse_width_set)
 
     def __init__(self):
-        this = _rehamovelib.new_Rehamove()
+        this = _rehamovelib.new_RehamoveDevice()
         try:
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
-    __swig_destroy__ = _rehamovelib.delete_Rehamove
+    __swig_destroy__ = _rehamovelib.delete_RehamoveDevice
     __del__ = lambda self: None
-Rehamove_swigregister = _rehamovelib.Rehamove_swigregister
-Rehamove_swigregister(Rehamove)
+RehamoveDevice_swigregister = _rehamovelib.RehamoveDevice_swigregister
+RehamoveDevice_swigregister(RehamoveDevice)
 
 
 def open_port(port_name):
     return _rehamovelib.open_port(port_name)
 open_port = _rehamovelib.open_port
 
+def close_port(r):
+    return _rehamovelib.close_port(r)
+close_port = _rehamovelib.close_port
+
+def initialize_low_level(r):
+    return _rehamovelib.initialize_low_level(r)
+initialize_low_level = _rehamovelib.initialize_low_level
+
+def stop_low_level(r):
+    return _rehamovelib.stop_low_level(r)
+stop_low_level = _rehamovelib.stop_low_level
+
 def pulse(r, channel, current, pulse_width):
     return _rehamovelib.pulse(r, channel, current, pulse_width)
 pulse = _rehamovelib.pulse
 
-def close_port(r):
-    return _rehamovelib.close_port(r)
-close_port = _rehamovelib.close_port
+def custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15):
+    return _rehamovelib.custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15)
+custom_pulse = _rehamovelib.custom_pulse
+
+def change_mode(r, mode):
+    return _rehamovelib.change_mode(r, mode)
+change_mode = _rehamovelib.change_mode
+
+def set_pulse_data(r, current, pulse_width):
+    return _rehamovelib.set_pulse_data(r, current, pulse_width)
+set_pulse_data = _rehamovelib.set_pulse_data
+
+def run(r, channel, period, total_milliseconds):
+    return _rehamovelib.run(r, channel, period, total_milliseconds)
+run = _rehamovelib.run
+
+def midlevel_start(r, channel, period):
+    return _rehamovelib.midlevel_start(r, channel, period)
+midlevel_start = _rehamovelib.midlevel_start
+
+def midlevel_update(r):
+    return _rehamovelib.midlevel_update(r)
+midlevel_update = _rehamovelib.midlevel_update
+
+def midlevel_end(r):
+    return _rehamovelib.midlevel_end(r)
+midlevel_end = _rehamovelib.midlevel_end
+
+def get_version():
+    return _rehamovelib.get_version()
+get_version = _rehamovelib.get_version
 
 def get_battery(r):
     return _rehamovelib.get_battery(r)
 get_battery = _rehamovelib.get_battery
 
+def get_mode(r):
+    return _rehamovelib.get_mode(r)
+get_mode = _rehamovelib.get_mode
+
+def get_current(r):
+    return _rehamovelib.get_current(r)
+get_current = _rehamovelib.get_current
+
+def get_pulse_width(r):
+    return _rehamovelib.get_pulse_width(r)
+get_pulse_width = _rehamovelib.get_pulse_width
+
 def battery_request(r):
     return _rehamovelib.battery_request(r)
 battery_request = _rehamovelib.battery_request
-
-def custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15):
-    return _rehamovelib.custom_pulse(r, channel, num_points, c0, w0, c1, w1, c2, w2, c3, w3, c4, w4, c5, w5, c6, w6, c7, w7, c8, w8, c9, w9, c10, w10, c11, w11, c12, w12, c13, w13, c14, w14, c15, w15)
-custom_pulse = _rehamovelib.custom_pulse
 # This file is compatible with both classic and new-style classes.
 
 
