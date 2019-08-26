@@ -16,7 +16,7 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 ## 1. How to install
 
-### 1.1 Python (2 and 3)
+### 1.1 Python (2 and 3, we have each of these builds on a separate folder, by default we assume you are building for python3)
 
 We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
 
@@ -35,8 +35,8 @@ On Linux make sure you have the following files (for your desired architecture, 
 
 #### 1.1.2 MacOS (AMD64)
 
-* [Nighly MacOS 64 zip](https://lab.plopes.org/rehamove/python-linux_mac64.zip) 
-* [Most-recent source code for MacOS AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python2/macOS/) 
+* [Nighly MacOS 64 zip](https://lab.plopes.org/rehamove/python-macOS.zip) 
+* [Most-recent source code for MacOS AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/macOS/) 
 
 On MacOS make sure you have the following files (only for 64 bit machines):
 
