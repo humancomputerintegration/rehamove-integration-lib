@@ -1,8 +1,8 @@
-# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3
+# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3 (v1.5)
 
-This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device.
+This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
-![image](extra/video.png)
+![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
 
 **What does this do?** The RehaMove 3 is a medical device that sends out electrical signals, which can be used clinically and in research, e.g. by doing functional electrical stimulation (FES) and/or electrical muscle stimulation (EMS). Existing documentation is provided by the manufacturer Hasomed to control the RehaMove via C code using a precompiled C library. **Instead, our libraries extend this functionality to Python and C#**, allowing the user to send commands in these other programming languages. This can be used for rapid prototyping, and/or integration with engines such as Unity3D.
@@ -20,11 +20,15 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
 
-#### 1.1.1 Linux
+#### 1.1.1 Linux (both AMD64 and ARM v7+) or MacOS (AMD64, untested for now)
 
-Download [this directory for 64-bit OS](builds/python/linux_amd64/) or [this directory for ARM](builds/python/linux_ARM/).
+* [Nighly Linux AMD64 zip](https://lab.plopes.org/rehamove/python-linux_amd64.zip) 
+* [Nighly Linux ARM V7+ zip](https://lab.plopes.org/rehamove/python-linux_ARM.zip) 
+* [Most-recent source code for AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) 
+* [Most-recent source code for ARM V7+](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM) 
+* MacOS is untested now, we will update soon.
 
-For Linux, we support two versions (for AMD64 and for ARM architectures). Make sure you have the following files:
+On Linux (or MacOS, which is untested for now) make sure you have the following files (for your desired architecture, either AMD64 or ARM V7+):
 
 1. `rehamove.py`
 2. `rehamovelib.py`
@@ -32,21 +36,19 @@ For Linux, we support two versions (for AMD64 and for ARM architectures). Make s
 
 #### 1.1.2 Windows
 
-Download [this directory](builds/python/windows_amd64/).
+* [Nighly Windows 64-bit (only) zip](https://lab.plopes.org/rehamove/python-windows_amd64.zip) 
+* [Most-recent source code for Windows 64-bit (only)](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/) 
 
-For Windows, we support AMD64 architectures. Make sure you have the following files:
+For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the following files:
 
 1. `rehamove.py`
 2. `rehamovelib.py`
 3. `_rehamovelib.pyd`
 
-#### 1.1.3 MacOS
-
-MacOS support has not been tested but we expect this to work. We are working on it. If you have tested, please report to us.
-
 ### 1.2 C\# (for Unity3D in Windows)
 
-Download [this directory](builds/csharp).
+* [Nighly Windows 64-bit (only) zip for C#](https://lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
+* [Most-recent source code for Windows 64-bit (only) C\#](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
 
 We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
 
@@ -55,15 +57,14 @@ We support C# for Unity3D integration on Windows-only. Make sure you have the fo
 
 After downloading the files, **move the downloaded files into the Assets folder of your Unity project**.
 
-Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. 
-
+(Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. )
 
 ## 2. Controlling the Rehamove via our library
 
 This section explains how to use our libraries, including example code demonstrating imports and calling the library functions.
 
 See our video tutorial:
-[![Video Tutorial for using our libraries](extra/video.png)](https://youtu.be/IyL0C_fEE2A)
+[![Video Tutorial for using our libraries](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)](https://youtu.be/IyL0C_fEE2A)
 
 ### 2.1 Python
 
@@ -129,7 +130,9 @@ This section describes the list of functions that our libraries currently suppor
 
 ### 3.1 Python
 
-* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is needed to invoke the other functions.** Takes in one argument (the port_name, for example **/dev/ttyUSB0**). Returns a Rehamove object. This function automatically opens the port. If an error occurs during device initialization, we return a NULL object, that should not be able to run any of the other functions. If this happens, it is best to retry initialization and store in a different variable.
+* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is the object upon which you invoke the other functions.** The call for `Rehamove()` takes in one argument, which is the port_name (for example **/dev/ttyUSB0** on Linux or COM3 on Windows, etc.). It returns a `Rehamove` object, so (as mentioned) remember to assign it. The creation of a `Rehamove` object automatically opens the port, unless an error occurs while opening the port (e.g., wrong port name, etc). 
+
+* Error handling when creating new `Rehamove` object: we currently do not have exception handling but we have error printing. Thus, your best option to handle this in code is to test whether your variable that holds the object is `None` (e.g., `if r == None`). One nice way to have a `while` loop that attempts connections until the return object is not  `None` -- this allows you to have apython script that infitely tries to get the port to connect to the device. 
 
 * `r.pulse(channel_name, current, pulse_width)`: Sends a single pulse. Takes in three arguments:
 	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
@@ -315,10 +318,10 @@ Both of the output DLLs (`rehamovelib.dll` and `UnityRehamove.dll`) can be impor
 
 This is a list of known bugs/features in our libraries that we hope to fix and/or implement soon. Please feel free to contact us if you find more!
 
-- Main bug: timing is inconsistent, some pulses are being dropped. Fix is coming! (Fixed in Python, will fix in C#)
-- Sparse exception handling (fixed in Python, will fix in C#)
-- For C# (on Unity3D), the port does not automatically close. Please use Unity3D's `onApplicationQuit()` method to call our library's `close()` function.
-- Sometimes when removing and replugging in the USB port connecting to the Rehamove, the next time a Rehamove object is initialized (i.e. with **r = Rehamove("COM3")**) that initialization fails -> but subsequent initializations should succeed. Can be worked around by simply trying the initialization again.
+- C#: Timing is inconsistent, and some pulses may be dropped if pulses are sent too quickly.
+- C#: Sparse error handling. 
+- C# in Unity3D: The port does not automatically close. Please use Unity3D's `onApplicationQuit()` method to call our library's `close()` function.
+- Python on Windows: Sometimes when disconnecting and reconnecting the USB device, the Rehamove object initialization (e.g. **r = Rehamove("COM3")**) will fail with an **"Unsuccessful device initialization response!"**. Subsequent initializations should succeed, so this can be worked around by trying to initialize the Rehamove object again.
 
 ## 6. Contact
 
@@ -337,9 +340,14 @@ Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 
 ## 8. Update History
 
-8-19-2019 Update
+8-22-2019 version 1.5 is out
+- Added callable function version() to get the version of the Python-side and C-side of the current library.
+- Allow the output channels to be called with integers as well (e.g. 0 = red, 1 = blue, 2 = gray1, 3 = gray2)
+
+8-19-2019 (no version names)
 - Fixed issue regarding inconsistent pulses when pulse commands are sent in rapid succession.
 - Fixed memory-related issue requiring needing to open and close ports repeatedly.
 - Added error handling for unsuccessful opening/closing the port, and unsuccessful method calls. Failure to open the port and/or initialize the device will return a NULL Rehamove object that should not be able to run any of the class methods.
 - Fixed issue with stalling while waiting for a response for a battery query -> user now sees a timeout.
 - Allow the output channels to be called in any case (e.g. "BLUE", "bLuE", or "blue")
+

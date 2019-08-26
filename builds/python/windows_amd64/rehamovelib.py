@@ -95,6 +95,7 @@ class Rehamove(object):
     __repr__ = _swig_repr
     port_name = property(_rehamovelib.Rehamove_port_name_get, _rehamovelib.Rehamove_port_name_set)
     device = property(_rehamovelib.Rehamove_device_get, _rehamovelib.Rehamove_device_set)
+    battery = property(_rehamovelib.Rehamove_battery_get, _rehamovelib.Rehamove_battery_set)
 
     def __init__(self):
         _rehamovelib.Rehamove_swiginit(self, _rehamovelib.new_Rehamove())
@@ -103,6 +104,9 @@ class Rehamove(object):
 # Register Rehamove in _rehamovelib:
 _rehamovelib.Rehamove_swigregister(Rehamove)
 
+
+def get_version():
+    return _rehamovelib.get_version()
 
 def open_port(port_name):
     return _rehamovelib.open_port(port_name)
