@@ -1,4 +1,5 @@
 #include "smpt_ll_client.h"
+#include "smpt_ml_client.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,49 +8,72 @@
 #include <unistd.h> /* Not for Windows */
 #endif
 
-#define VERSION_NUMBER "v1.5"
+#define VERSION_NUMBER "v1.6"
+
 #define TIMEOUT_COUNTER 10000000
 
+#define MODE_LOW_LEVEL 0
+#define MODE_MID_LEVEL 1
+
 typedef struct {
-    char port_name[64];
     Smpt_device device;
     int battery;
-} Rehamove;
+    int mode;
+    float current;
+    uint16_t pulse_width;
+} RehamoveDevice;
 
+/* FUNCTION DECLARATIONS */
+
+// Opening and closing the connection.
+RehamoveDevice * open_port(const char * port_name);
+int close_port(RehamoveDevice * r);
+
+// Low-level functionality (the default) -> sending individual pulses.
+int initialize_low_level(RehamoveDevice * r);
+int stop_low_level(RehamoveDevice * r);
+int pulse(RehamoveDevice * r, int channel, float current, int pulse_width);
+int custom_pulse(RehamoveDevice * r, int channel, int num_points, float c0, int w0, float c1, int w1, float c2, int w2, float c3, int w3, float c4, int w4, float c5, int w5, float c6, int w6, float c7, int w7, float c8, int w8, float c9, int w9, float c10, int w10, float c11, int w11, float c12, int w12, float c13, int w13, float c14, int w14, float c15, int w15);
+
+// Mid-level functionality -> setting a recurring pulse.
+int change_mode(RehamoveDevice * r, int mode);
+int set_pulse_data(RehamoveDevice * r, float current, int pulse_width);
+int run(RehamoveDevice * r, int channel, float period, int total_milliseconds);
+int midlevel_start(RehamoveDevice * r, int channel, float period);
+int midlevel_update(RehamoveDevice * r);
+int midlevel_end(RehamoveDevice * r);
+
+// Global functionality -> can be called in any mode.
 char * get_version();
-Rehamove * open_port(const char * port_name);
-int close_port(Rehamove * r);
-int pulse(Rehamove * r, int channel, float current, int pulse_width);
-int get_battery(Rehamove * r);
-int battery_request(Rehamove * r);
-int custom_pulse(Rehamove * r, int channel, int num_points, float c0, int w0, float c1, int w1, float c2, int w2, float c3, int w3, float c4, int w4, float c5, int w5, float c6, int w6, float c7, int w7, float c8, int w8, float c9, int w9, float c10, int w10, float c11, int w11, float c12, int w12, float c13, int w13, float c14, int w14, float c15, int w15);
+int get_battery(RehamoveDevice * r);
+int get_mode(RehamoveDevice * r);
+float get_current(RehamoveDevice * r);
+int get_pulse_width(RehamoveDevice * r);
+int battery_request(RehamoveDevice * r);
 
+// Debugging functions -> not intended for users to use.
 void print_device(Smpt_device d, const char * filename);
 void error_callback(const char * message) {
     printf("ERROR CALLBACK: %s\n", message);
 }
 
-/* USER-FACING FUNCTIONS */
+/* FUNCTION DEFINITIONS */
 
-char * get_version() {
-    return VERSION_NUMBER;
-}
-
-Rehamove * open_port(const char * port_name) {
+RehamoveDevice * open_port(const char * port_name) {
+    
     smpt_init_error_callback(&error_callback);
 
-    uint8_t packet_number = 1;  /* The packet_number can be used for debugging purposes */
+    RehamoveDevice * r = (RehamoveDevice *) calloc(1, sizeof(RehamoveDevice));
 
-    Rehamove * r = (Rehamove *) calloc(1, sizeof(Rehamove));
-
-    for (int i = 0; i < strlen(port_name); i++) {
-        (r->port_name)[i] = *(port_name + i);
-    }
-    (r->port_name)[strlen(port_name)] = '\0';
+    // Set the defaults.
     r->battery = -1;
+    r->mode = -1;
+    r->current = 0;
+    r->pulse_width = 0;
 
     Smpt_device device = {0};
     r->device = device;
+
     bool open_port_result = smpt_open_serial_port(&(r->device), port_name);
     if (!open_port_result) {
         printf("open_port() ERROR: Opening connection to port %s failed!\n", port_name);
@@ -57,46 +81,148 @@ Rehamove * open_port(const char * port_name) {
         return NULL;
     }
 
-    Smpt_ll_init ll_init = {0};       /* Struct for ll_init command */
-    /* Clear ll_init struct and set the data */
+    // Default is low-level mode, so we will start with that.
+    int initialize_low_level_result = initialize_low_level(r);
+    if (initialize_low_level_result) {
+        printf("open_port() ERROR: Unable to initialize low-level stimulation!\n");
+        free(r);
+        return NULL;
+    }
+
+    printf("open_port() SUCCESS: Connected to port %s and initialized device.\n", port_name);
+    return r;
+}
+
+int close_port(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("close_port() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+
+    // Stop the low-level stimulation, if it is still active.
+    if (r->mode == MODE_LOW_LEVEL) {
+        int stop_low_level_result = stop_low_level(r);
+        if (stop_low_level_result) {
+            printf("close_port() ERROR: Unable to stop low-level stimulation!\n");
+            return 1;
+        }
+    }
+    
+    bool close_port_result = smpt_close_serial_port(&(r->device));
+    if (!close_port_result) {
+        printf("close_port() ERROR! Close port request not sent!\n");
+        return 1;
+    }
+    free(r);
+    printf("close_port() SUCCESS: Stopped device and closed port successfully.\n");
+    return 0;
+}
+
+int initialize_low_level(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("initialize_low_level() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    if (r->mode == MODE_LOW_LEVEL) {
+        printf("initialize_low_level() ERROR: Low-level mode already initialized.\n");
+        return 0;
+    }
+
+    uint8_t packet_number = 1;  
+    Smpt_ll_init ll_init = {0};
+
     smpt_clear_ll_init(&ll_init);
     ll_init.packet_number = packet_number;
 
     /* Send the ll_init command to stimulation unit */
     bool ll_init_result = smpt_send_ll_init(&(r->device), &ll_init);
     if (!ll_init_result) {
-        printf("open_port() ERROR: Sending device initialization message failed!\n");
-        free(r);
-        return NULL;
+        printf("initialize_low_level() ERROR: Sending device initialization message failed!\n");
+        return 1;
     }
 
     int counter = 0;
     while (!smpt_new_packet_received(&(r->device))) {
         if (counter > TIMEOUT_COUNTER) {
-            printf("open_port() ERROR: Receiving device initialization message timed out!\n");
-            free(r);
-            return NULL;
+            printf("initialize_low_level() ERROR: Receiving device initialization message timed out!\n");
+            return 1;
         }
         counter += 1;
     }   
+
     Smpt_ack ack;
     smpt_last_ack(&(r->device), &ack);
 
     if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ll_Init_Ack)) {
-        printf("open_port() ERROR: Unsuccessful device initialization response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ll_Init_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
-        free(r);
-        return NULL;
+        if (ack.result == Smpt_Result_Not_Initialized_Error) {
+            printf("initialize_low_level() ERROR: Unsuccessful device initialization response, midlevel could be active! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ll_Init_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+            int end_midlevel_result = midlevel_end(r);
+            return 1;
+        }
+        // Default error message -> specify the code.
+        printf("initialize_low_level() ERROR: Unsuccessful device initialization response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ll_Init_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    } else {
+        Smpt_ll_init_ack init_ack;
+        smpt_get_ll_init_ack(&(r->device), &init_ack);
     }
 
-    Smpt_ll_init_ack init_ack;
-    smpt_get_ll_init_ack(&(r->device), &init_ack);
-    printf("open_port() SUCCESS: Connected to port %s and initialized device.\n", port_name);
-    return r;
+    // After initializing the low-level stimulation, set the mode in our RehamoveDevice struct.
+    r->mode = MODE_LOW_LEVEL;
+
+    printf("initialize_low_level() SUCCESS: Device successfully initialized low-level stimulation.\n");
+    return 0;
 }
 
-int pulse(Rehamove * r, int channel, float current, int pulse_width) {
+int stop_low_level(RehamoveDevice * r) {
     if (r == NULL) {
-        printf("pulse() ERROR: No Rehamove object found!\n");
+        printf("stop_low_level() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    if (r->mode == MODE_MID_LEVEL) {
+        printf("stop_low_level() ERROR: Low-level stimulation already stopped.\n");
+        return 0;
+    }
+
+    uint8_t packet_number = 1;
+    bool ll_stop_result = smpt_send_ll_stop(&(r->device), packet_number);
+    if (!ll_stop_result) {
+        printf("stop_low_level() ERROR: Stopping low-level stimulation request not sent!\n");
+        return 1;
+    }
+
+    int counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("stop_low_level() ERROR: Receiving low-level stimulation stop response timed out!\n");
+            return 1;
+        }
+    }
+
+    Smpt_ack ack;
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ll_Stop_Ack)) {
+        // Default error message -> specify the code.
+        printf("stop_low_level() ERROR: Unsuccessful low-level stimulation stop response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ll_Stop_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    // After stopping the low-level stimulation, set the mode in our RehamoveDevice struct.
+    r->mode = MODE_MID_LEVEL;
+
+    printf("stop_low_level() SUCCESS: Device successfully stopped low-level stimulation.\n");
+    return 0;
+}
+
+
+int pulse(RehamoveDevice * r, int channel, float current, int pulse_width) {
+    if (r == NULL) {
+        printf("pulse() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    if (r->mode != MODE_LOW_LEVEL) {
+        printf("pulse() ERROR: Not in low-level stimulation mode.\n");
         return 1;
     }
 
@@ -150,10 +276,14 @@ int pulse(Rehamove * r, int channel, float current, int pulse_width) {
     return 0;
 }
 
-int custom_pulse(Rehamove * r, int channel, int num_points, float c0, int w0, float c1, int w1, float c2, int w2, float c3, int w3, float c4, int w4, float c5, int w5, float c6, int w6, float c7, int w7, float c8, int w8, float c9, int w9, float c10, int w10, float c11, int w11, float c12, int w12, float c13, int w13, float c14, int w14, float c15, int w15) {
+int custom_pulse(RehamoveDevice * r, int channel, int num_points, float c0, int w0, float c1, int w1, float c2, int w2, float c3, int w3, float c4, int w4, float c5, int w5, float c6, int w6, float c7, int w7, float c8, int w8, float c9, int w9, float c10, int w10, float c11, int w11, float c12, int w12, float c13, int w13, float c14, int w14, float c15, int w15) {
 
     if (r == NULL) {
-        printf("custom_pulse() ERROR: No Rehamove object found!\n");
+        printf("custom_pulse() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    if (r->mode != MODE_LOW_LEVEL) {
+        printf("pulse() ERROR: Not in low-level stimulation mode.\n");
         return 1;
     }
 
@@ -233,64 +363,407 @@ int custom_pulse(Rehamove * r, int channel, int num_points, float c0, int w0, fl
     return 0;
 }
 
-int close_port(Rehamove * r) {
+
+int change_mode(RehamoveDevice * r, int mode) {
     if (r == NULL) {
-        printf("close_port() ERROR: No Rehamove object found!\n");
+        printf("change_mode() ERROR: No RehamoveDevice object found!\n");
         return 1;
     }
 
-    uint8_t packet_number = 1;
-    bool ll_stop_result = smpt_send_ll_stop(&(r->device), packet_number);
-    if (!ll_stop_result) {
-        printf("close_port() ERROR: Stopping device request not sent!\n");
+    if (mode == MODE_LOW_LEVEL) {
+        if (r->mode == MODE_LOW_LEVEL) {
+            printf("change_mode() ERROR: Low-level mode already initialized.\n");
+            return 1;
+        }
+        int initialize_low_level_result = initialize_low_level(r);
+        if (initialize_low_level_result) {
+            printf("change_mode() ERROR: Unable to change to low-level mode!\n");
+            return 1;
+        }
+        printf("change_mode() SUCCESS: Changed to low-level mode.\n");
+        return 0;
+    }
+
+    else if (mode == MODE_MID_LEVEL) {
+        if (r->mode == MODE_MID_LEVEL) {
+            printf("change_mode() ERROR: Mid-level mode already initialized.\n");
+            return 1;
+        }
+        int stop_low_level_result = stop_low_level(r);
+        if (stop_low_level_result) {
+            printf("change_mode() ERROR: Unable to change to mid-level mode!\n");
+            return 1;
+        }
+        printf("change_mode() SUCCESS: Changed to mid-level mode.\n");
+        return 0;
+    }
+
+    else {
+        printf("change_mode() ERROR: Invalid mode specified!\n");
+        return 1;
+    }
+}
+
+
+int set_pulse_data(RehamoveDevice * r, float current, int pulse_width) {
+    if (r == NULL) {
+        printf("set_pulse_data() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    r->current = current;
+    r->pulse_width = pulse_width;
+    printf("set_pulse_data(): Set RehamoveDevice struct pulse to current %0.3f pulse_width %d\n", r->current, r->pulse_width);
+    return 0;
+}
+
+
+int get_pulse_data(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("get_pulse_data() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    printf("get_pulse_data(): current %0.3f pulse_width %d\n", r->current, r->pulse_width);
+    return 0;
+}
+
+
+int run(RehamoveDevice * r, int channel, float period, int total_milliseconds) {
+    if (r == NULL) {
+        printf("run() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+    int seconds = total_milliseconds / 1000;
+    int remainder = total_milliseconds % 1000;
+    printf("total_milliseconds %d seconds %d remainder %d\n", total_milliseconds, seconds, remainder);
+
+    Smpt_ml_init ml_init = {0};   
+    smpt_clear_ml_init(&ml_init);
+    
+    bool ml_init_result = smpt_send_ml_init(&(r->device), &ml_init);
+    if (!ml_init_result) {
+        printf("ml_init() ERROR: Sending device mid-level initialization message failed!\n");
         return 1;
     }
 
     int counter = 0;
     while (!smpt_new_packet_received(&(r->device))) {
         if (counter > TIMEOUT_COUNTER) {
-            printf("close_port() ERROR: Receiving device stop response timed out!\n");
+            printf("ml_init() ERROR: Receiving device mid-level initialization message timed out!\n");
             return 1;
         }
-    }
+        counter += 1;
+    }   
 
     Smpt_ack ack;
     smpt_last_ack(&(r->device), &ack);
-    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ll_Stop_Ack)) {
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Init_Ack)) {
         // Default error message -> specify the code.
-        printf("close_port() ERROR: Unsuccessful device stop response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ll_Stop_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        printf("ml_init() ERROR: Unsuccessful device mid-level initialization response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Init_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
         return 1;
     }
 
-    bool close_port_result = smpt_close_serial_port(&(r->device));
-    if (!close_port_result) {
-        printf("close_port() ERROR! Close port request not sent!\n");
+    Smpt_ml_update ml_update = {0};
+    smpt_clear_ml_update(&ml_update);
+    ml_update.enable_channel[channel] = true;
+    ml_update.channel_config[channel].number_of_points = 3;
+    ml_update.channel_config[channel].ramp = 0;
+    ml_update.channel_config[channel].period = period;
+    /* Set the stimulation pulse */
+    ml_update.channel_config[channel].points[0].current = r->current;
+    ml_update.channel_config[channel].points[0].time    = r->pulse_width;
+    ml_update.channel_config[channel].points[1].time    = (r->pulse_width) / 2;
+    ml_update.channel_config[channel].points[2].current = (r->current) * -1;
+    ml_update.channel_config[channel].points[2].time    = r->pulse_width;
+    
+    bool ml_update_result = smpt_send_ml_update(&(r->device), &ml_update);
+    if (!ml_update_result) {
+        printf("ml_update_result() ERROR: Sending device mid-level update message failed!\n");
         return 1;
     }
-    free(r);
-    printf("close_port() SUCCESS: Stopped device and closed port successfully.\n");
+
+    counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("ml_update_result() ERROR: Receiving device mid-level update message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Update_Ack)) {
+        // Default error message -> specify the code.
+        printf("ml_update_result() ERROR: Unsuccessful device mid-level update response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Update_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    Smpt_ml_get_current_data ml_get_current_data = {0};
+    ml_get_current_data.data_selection[Smpt_Ml_Data_Stimulation] = true;
+
+    for (int i = 0; i <= seconds; i++) { 
+        // Every second, we send a keep-alive update. We must always start with at least one.
+        bool keep_alive_result = smpt_send_ml_get_current_data(&(r->device), &ml_get_current_data);
+        if (!keep_alive_result) {
+            printf("keep_alive_result() ERROR: Sending device alive message failed!\n");
+            return 1;
+        }
+
+        counter = 0;
+        while (!smpt_new_packet_received(&(r->device))) {
+            if (counter > TIMEOUT_COUNTER) {
+                printf("keep_alive_result() ERROR: Receiving device alive message timed out!\n");
+                return 1;
+            }
+            counter += 1;
+        }   
+        
+        smpt_last_ack(&(r->device), &ack);
+
+        if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Get_Current_Data_Ack)) {
+            // Default error message -> specify the code.
+            printf("keep_alive_result() ERROR: Unsuccessful device alive response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Get_Current_Data_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+            return 1;
+        }
+
+        if (i == seconds) {
+            break;
+        }
+        
+        usleep(1000000);
+    }
+
+    // Before sending the stop message, wait for the remainder of milliseconds.
+    usleep(1000 * remainder);
+
+    bool ml_stop_result = smpt_send_ml_stop(&(r->device), smpt_packet_number_generator_next(&(r->device)));
+    if (!ml_stop_result) {
+        printf("ml_stop_result() ERROR: Sending device stop message failed!\n");
+        return 1;
+    }
+
+    counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("ml_stop_result() ERROR: Receiving device stop message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+    
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Stop_Ack)) {
+        // Default error message -> specify the code.
+        printf("ml_stop_result() ERROR: Unsuccessful device stop response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Stop_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    printf("run() SUCCESS: Ran pulses of %0.2f mA and %d us on a period of %0.2f us for a total of %d ms.\n", r->current, r->pulse_width, period, total_milliseconds);
     return 0;
 }
 
-int get_battery(Rehamove * r) {
+
+int midlevel_start(RehamoveDevice * r, int channel, float period) {
     if (r == NULL) {
-        printf("get_battery() ERROR: No Rehamove object found!\n");
+        printf("midlevel_start() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+
+    Smpt_ml_init ml_init = {0};   
+    smpt_clear_ml_init(&ml_init);
+    
+    bool ml_init_result = smpt_send_ml_init(&(r->device), &ml_init);
+    if (!ml_init_result) {
+        printf("ml_init() ERROR: Sending device mid-level initialization message failed!\n");
+        return 1;
+    }
+
+    int counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("ml_init() ERROR: Receiving device mid-level initialization message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+
+    Smpt_ack ack;
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Init_Ack)) {
+        // Default error message -> specify the code.
+        printf("ml_init() ERROR: Unsuccessful device mid-level initialization response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Init_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    Smpt_ml_update ml_update = {0};
+    smpt_clear_ml_update(&ml_update);
+    ml_update.enable_channel[channel] = true;
+    ml_update.channel_config[channel].number_of_points = 3;
+    ml_update.channel_config[channel].ramp = 0;
+    ml_update.channel_config[channel].period = period;
+    /* Set the stimulation pulse */
+    ml_update.channel_config[channel].points[0].current = r->current;
+    ml_update.channel_config[channel].points[0].time    = r->pulse_width;
+    ml_update.channel_config[channel].points[1].time    = (r->pulse_width) / 2;
+    ml_update.channel_config[channel].points[2].current = (r->current) * -1;
+    ml_update.channel_config[channel].points[2].time    = r->pulse_width;
+    
+    bool ml_update_result = smpt_send_ml_update(&(r->device), &ml_update);
+    if (!ml_update_result) {
+        printf("ml_update_result() ERROR: Sending device mid-level update message failed!\n");
+        return 1;
+    }
+
+    counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("ml_update_result() ERROR: Receiving device mid-level update message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Update_Ack)) {
+        // Default error message -> specify the code.
+        printf("ml_update_result() ERROR: Unsuccessful device mid-level update response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Update_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    int keep_alive_result = midlevel_update(r);
+    if (keep_alive_result) {
+        printf("midlevel_start() ERROR: Unsuccessful keep alive.\n");
+        return 1;
+    }
+    return 0;
+}
+
+
+int midlevel_update(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("midlevel_update() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+
+    Smpt_ml_get_current_data ml_get_current_data = {0};
+    ml_get_current_data.data_selection[Smpt_Ml_Data_Stimulation] = true;
+
+    bool keep_alive_result = smpt_send_ml_get_current_data(&(r->device), &ml_get_current_data);
+    if (!keep_alive_result) {
+        printf("keep_alive_result() ERROR: Sending device alive message failed!\n");
+        return 1;
+    }
+
+    int counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("keep_alive_result() ERROR: Receiving device alive message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+    
+    Smpt_ack ack;
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Get_Current_Data_Ack)) {
+        // Default error message -> specify the code.
+        printf("keep_alive_result() ERROR: Unsuccessful device alive response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Get_Current_Data_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    return 0;
+}
+
+
+int midlevel_end(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("midlevel_end() ERROR: No RehamoveDevice object found!\n");
+        return 1;
+    }
+
+    bool ml_stop_result = smpt_send_ml_stop(&(r->device), smpt_packet_number_generator_next(&(r->device)));
+    if (!ml_stop_result) {
+        printf("ml_stop_result() ERROR: Sending device stop message failed!\n");
+        return 1;
+    }
+
+    int counter = 0;
+    while (!smpt_new_packet_received(&(r->device))) {
+        if (counter > TIMEOUT_COUNTER) {
+            printf("ml_stop_result() ERROR: Receiving device stop message timed out!\n");
+            return 1;
+        }
+        counter += 1;
+    }   
+    
+    Smpt_ack ack;
+    smpt_last_ack(&(r->device), &ack);
+
+    if ((ack.result != Smpt_Result_Successful) || (ack.command_number != Smpt_Cmd_Ml_Stop_Ack)) {
+        // Default error message -> specify the code.
+        printf("ml_stop_result() ERROR: Unsuccessful device stop response! Expected: command %d result %d, Received: command %d result %d.\n", Smpt_Cmd_Ml_Stop_Ack, Smpt_Result_Successful, ack.command_number, ack.result);
+        return 1;
+    }
+
+    return 0;
+}
+
+
+char * get_version() {
+    return VERSION_NUMBER;
+}
+
+
+int get_battery(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("get_battery() ERROR: No RehamoveDevice object found!\n");
         return -1;
     }
     return r->battery;
 }
 
-int battery_request(Rehamove * r) {
+int get_mode(RehamoveDevice * r) {
     if (r == NULL) {
-        printf("battery_request() ERROR: No Rehamove object found!\n");
+        printf("get_mode() ERROR: No RehamoveDevice object found!\n");
+        return -1;
+    }
+    return r->mode;
+}
+
+float get_current(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("get_current() ERROR: No RehamoveDevice object found!\n");
+        return -1;
+    }
+    return r->current;
+}
+
+int get_pulse_width(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("get_pulse_width() ERROR: No RehamoveDevice object found!\n");
+        return 0;
+    }
+    return (int) r->pulse_width;
+}
+
+int battery_request(RehamoveDevice * r) {
+    if (r == NULL) {
+        printf("battery_request() ERROR: No RehamoveDevice object found!\n");
         return 1;
     }
+
     uint8_t packet_number = 42;
     bool battery_result = smpt_send_get_battery_status(&(r->device), packet_number);
     if (!battery_result) {
         printf("battery_result() ERROR: Battery request not sent!\n");
         return 1;
     }
+    
     int counter = 0;
     while (!smpt_new_packet_received(&(r->device))) {
         if (counter > TIMEOUT_COUNTER) {
@@ -381,4 +854,30 @@ void print_device(Smpt_device d, const char * filename) {
     fprintf(file, ")\n");
     fprintf(file, "END PRINT DEVICE.\n");
     fclose(file);
+}
+
+int main() {
+    RehamoveDevice * r = open_port("/dev/ttyUSB1");
+    get_pulse_data(r);
+    set_pulse_data(r, 10, 200);
+    get_pulse_data(r);
+    change_mode(r, 1);
+    //run(r, 1, 100, 10000);
+    midlevel_start(r, 1, 100);
+    for (int i = 0; i < 5; i++) {
+        midlevel_update(r);
+        usleep(1000000);
+    }
+    //midlevel_end(r);
+    battery_request(r);
+    int battery = get_battery(r);
+    printf("battery %d\n", battery);
+    change_mode(r, 0);
+    for (int i = 0; i < 100; i++) {
+        pulse(r, 1, 20, 200);
+    }
+
+    change_mode(r, 1);
+    run(r, 1, 100, 10000);
+    close_port(r);
 }
