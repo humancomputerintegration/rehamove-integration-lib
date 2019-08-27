@@ -1,4 +1,4 @@
-# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3 (v1.5)
+# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3 (v1.6)
 
 This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
@@ -16,14 +16,14 @@ This is the **rehamoveIntegrationLib**, a collection of libraries (for non-comme
 
 ## 1. How to install
 
-### 1.1 Python (2 and 3, we have each of these builds on a separate folder, by default we assume you are building for python3)
+### 1.1 Python (2 and 3, we have each of these builds on a separate folder, by default we assume you are building for Python 3)
 
-We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python2.
+We support several versions of the library for different systems. After downloading the files, **move the files to your working directory** (where you will run Python from). These instructions assume use of the 64-bit version of Python 3; we also have libraries for the 64-bit version of Python 2 as well as the 32-bit version of Python 3.
 
 #### 1.1.1 Linux (both AMD64 and ARM v7+) 
 
-* [Nighly Linux AMD64 zip](https://lab.plopes.org/rehamove/python-linux_amd64.zip) 
-* [Nighly Linux ARM V7+ zip](https://lab.plopes.org/rehamove/python-linux_ARM.zip) 
+* [Nightly Linux AMD64 zip](https://lab.plopes.org/rehamove/python-linux_amd64.zip) 
+* [Nightly Linux ARM V7+ zip](https://lab.plopes.org/rehamove/python-linux_ARM.zip) 
 * [Most-recent source code for AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_amd64/) 
 * [Most-recent source code for ARM V7+](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/linux_ARM) 
 
@@ -35,7 +35,7 @@ On Linux make sure you have the following files (for your desired architecture, 
 
 #### 1.1.2 MacOS (AMD64)
 
-* [Nighly MacOS 64 zip](https://lab.plopes.org/rehamove/python-macOS.zip) 
+* [Nightly MacOS 64 zip](https://lab.plopes.org/rehamove/python-macOS.zip) 
 * [Most-recent source code for MacOS AMD64](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/macOS/) 
 
 On MacOS make sure you have the following files (only for 64 bit machines):
@@ -47,7 +47,7 @@ On MacOS make sure you have the following files (only for 64 bit machines):
 
 #### 1.1.3 Windows
 
-* [Nighly Windows 64-bit (only) zip](https://lab.plopes.org/rehamove/python-windows_amd64.zip) 
+* [Nightly Windows 64-bit (only) zip](https://lab.plopes.org/rehamove/python-windows_amd64.zip) 
 * [Most-recent source code for Windows 64-bit (only)](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/python/windows_amd64/) 
 
 For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the following files:
@@ -58,7 +58,7 @@ For Windows, we support 64-bit (aka AMD64) architectures. Make sure you have the
 
 ### 1.2 C\# (for Unity3D in Windows)
 
-* [Nighly Windows 64-bit (only) zip for C#](https://lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
+* [Nightly Windows 64-bit (only) zip for C#](https://lab.plopes.org/rehamove/csharp-windows_amd64.zip) 
 * [Most-recent source code for Windows 64-bit (only) C\#](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/builds/csharp).
 
 We support C# for Unity3D integration on Windows-only. Make sure you have the following files:
@@ -68,7 +68,7 @@ We support C# for Unity3D integration on Windows-only. Make sure you have the fo
 
 After downloading the files, **move the downloaded files into the Assets folder of your Unity project**.
 
-(Theoretically our build might work also on Linux and Mac; if you got the sharp to run on those platforms, write us an email. )
+(Theoretically our build might work also on Linux and Mac; if you got C# to run on those platforms, write us an email. )
 
 ## 2. Controlling the Rehamove via our library
 
@@ -99,9 +99,13 @@ In addition, our libraries can also be imported in interactive Python sessions. 
 python
 > from rehamove import *                                # Import our library
 > r = Rehamove("/dev/ttyUSB0")                          # Open USB port (on Linux)
-> r.pulse("blue", 5, 200)                               # Send single pulse
+> r.version()                                           # Query battery life
 > r.battery()                                           # Query battery life
+> r.pulse("blue", 5, 200)                               # Send single pulse
 > r.custom_pulse("blue", [(5.0, 200), (-5.0, 200)])     # Send pulse with custom waveform
+> r.change_mode(1)                                      # Change to mid-level mode
+> r.set_pulse(5, 200)                                   # Set the pulse used in mid-level mode
+> r.run("blue", 100, 10000)                             # Run that set pulse every 100 ms for 10s total
 > exit()                                                # Automatically closes port
 ```
 
@@ -141,21 +145,53 @@ This section describes the list of functions that our libraries currently suppor
 
 ### 3.1 Python
 
-* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is the object upon which you invoke the other functions.** The call for `Rehamove()` takes in one argument, which is the port_name (for example **/dev/ttyUSB0** on Linux or COM3 on Windows, etc.). It returns a `Rehamove` object, so (as mentioned) remember to assign it. The creation of a `Rehamove` object automatically opens the port, unless an error occurs while opening the port (e.g., wrong port name, etc). 
+* `r = Rehamove(port_name)`: Constructor to initialize the device. **Save the return value to a variable! This return value is the object upon which you invoke the other functions.** The call for `Rehamove()` takes in one argument, the port name (for example **/dev/ttyUSB0** on Linux or **COM3** on Windows, etc.). It returns a `Rehamove` object with the device connection saved as `Rehamove.rehamove`, so (as mentioned) remember to assign it. The creation of a `Rehamove` object automatically opens the port, unless an error occurs while opening the port (e.g., wrong port name, etc). 
 
-* Error handling when creating new `Rehamove` object: we currently do not have exception handling but we have error printing. Thus, your best option to handle this in code is to test whether your variable that holds the object is `None` (e.g., `if r == None`). One nice way to have a `while` loop that attempts connections until the return object is not  `None` -- this allows you to have apython script that infitely tries to get the port to connect to the device. 
+    * Error handling when creating new `Rehamove` object: we currently do not have exception handling but we have error printing. Thus, your best option to handle this in code is to test whether your variable that holds the object is `None` (e.g., `if r.rehamove == None`). One nice way to have a `while` loop that attempts connections until the device connection is not  `None` -- this allows you to have a Python script that infitely tries to get the port to connect to the device. See [one of our examples](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/python/examples/connect_midway.py).
 
-* `r.pulse(channel_name, current, pulse_width)`: Sends a single pulse. Takes in three arguments:
-	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
-	* the current intensity (mA)
-	* the length of the pulse (us)
+* `r.version()`: Gets the version of the library used.
 
-* `r.custom_pulse(channel_name, points_array)`:
-Sends a single pulse with a custom waveform. Takes in two arguments:
-	* a character string for the channel (e.g. `"red"`, `"blue"`, or `"black"`). Also, using integers also works (0 = red, 1 = blue, 2 = black/grey).
-	* an array of tuples, each tuple having two elements (a current (mA), and a pulse_width (us)). The custom waveform can only support 16 points. Sending an array with more than 16 points will only execute the first 16 points, and sending an array with less than 16 points will automatically create empty points (0.0, 0) to fill in the leftover number.
+All of the remaining functions require that the Rehamove object is correctly initialized; otherwise, an error is generated.
 
-* `r.battery()`: Queries the device for the battery percentage. Prints the battery value, and also returns an integer that represents the battery percentage.
+* `r.info()`: Gets information about the connected device, including the currently active mode. The device has two modes, low-level and mid-level:
+    * Low-level: The user sends a command for each individual pulse. **This is the default mode.**
+    * Mid-level: The user presets the pulse parameters, and can command the Rehamove to automatically send that pulse with a user-defined period. `r.info()` allows the user to see the device's preset pulse parameters.
+
+* `r.battery()`: Queries the device for the battery percentage. Prints the battery percentage. Also, *returns **integer representing the battery percentage** on success, and -1 on failure.*
+
+* `r.change_mode(mode)`: Changes the mode for the device. *Returns 0 on success, -1 on failure.* The options are:
+    * `0`: Low-level mode.
+    * `1`: Mid-level mode.
+
+* `r.pulse(channel_name, current, pulse_width)`: **Low-level mode only.** Sends a single pulse. *Returns 0 on success, -1 on failure.* Takes in three arguments:
+	* The output channel. There are four possible outputs for the Rehamove: the red channel, the blue channel, and two outputs for the grey channel. They can be specified in any of the following ways:
+        * Red channel: `0`, `"r"`, `"red"`
+        * Blue channel: `1`, `"b"`, `"blue"`
+        * First gray channel: `2`, `"g1"`, `"gray1"`, `"grey1"`, `"black"`
+        * Second gray channel: `3`, `"g2"`, `"gray2"`, `"grey2"`, `"white"`
+	* The current intensity, **in milliAmperes (mA)**.
+	* The length of the pulse, **in microseconds (us)**.
+
+* `r.custom_pulse(channel_name, points_array)`: **Low-level mode only.** Sends a single pulse with a custom waveform. *Returns 0 on success, -1 on failure.* Takes in two arguments:
+	* The output channel (see **pulse()** for explanation of the options).
+	* An array of tuples, each tuple having two elements (a current (mA), and a pulse_width (us)). The custom waveform can support a **maximum of 16 points**. Sending an array with more than 16 points will only execute the first 16 points, and sending an array with less than 16 points will automatically create empty points (0.0, 0) to fill in the leftover number.
+
+* `r.set_pulse(current, pulse_width)`: **Used in mid-level mode only, but can be called at any time.** Sets the pulse parameters for what will be used in mid-level mode. *Returns 0 on success, -1 on failure.* Takes in two arguments:
+    * The current intensity, **in milliAmperes (mA)**.
+    * The length of the pulse, **in microseconds (us)**.
+
+* `r.run(channel_name, period, total_milliseconds)`: **Mid-level mode only.** Starts Rehamove stimulation that sends **the pulse set by set_pulse()**. In this function, mid-level stimulation is automatically initialized, and automatically stopped at the end. *Returns 0 on success, -1 on failure.* Takes in three arguments:
+    * The output channel (see **pulse()** for explanation of the options).
+    * The period, **in milliseconds (ms)**. A pulse will be sent every *period* ms, starting at 0ms.
+    * The total time of stimulation, **in milliseconds (ms)**.
+
+* `r.start(channel_name, period)`: **Mid-level mode only; in combination with update() and end().** Starts Rehamove stimulation that sends **the pulse set by set_pulse()**. In this function, mid-level stimulation is automatically initialized. A keep-alive signal **(done by update())** must manually be called at least every two seconds; otherwise stimulation stops. Also, user must manually call **end()** at the end of the stimulation to properly stop mid-level stimulation (necessary if intending to switch back to low-level stimulation mode. *Returns 0 on success, -1 on failure.* Takes in two arguments:
+    * The output channel (see **pulse()** for explanation of the options).
+    * The period, **in milliseconds (ms)**. A pulse will be sent every *period* ms, starting at 0ms.
+
+** `r.update()`: **Mid-level mode only; in combination with start() and end().** Sends a keep-alive signal for any mid-level stimulation initialized by **start()**. This signal must be sent at least once every two seconds; otherwise that mid-level stimulation will stop. *Returns 0 on success, -1 on failure.* Takes in no arguments.
+
+** `r.end()`: **Mid-level mode only; in combination with start() and update().** Stops the mid-level stimulation initialized by **start()**. This signal must be sent at the end of the stimulation to properly stop mid-level stimulation, especially when switching back to low-level mode. *Returns 0 on success, -1 on failure.* Takes in no arguments.
 
 * The connection port **automatically closes** open exiting the Python application.
 
