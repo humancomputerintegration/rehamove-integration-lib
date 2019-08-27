@@ -193,17 +193,35 @@ class rehamovelibPINVOKE {
   }
 
 
-  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_port_name_set")]
-  public static extern void RehamoveDevice_port_name_set(global::System.Runtime.InteropServices.HandleRef jarg1, string jarg2);
-
-  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_port_name_get")]
-  public static extern string RehamoveDevice_port_name_get(global::System.Runtime.InteropServices.HandleRef jarg1);
-
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_device_set")]
   public static extern void RehamoveDevice_device_set(global::System.Runtime.InteropServices.HandleRef jarg1, global::System.Runtime.InteropServices.HandleRef jarg2);
 
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_device_get")]
   public static extern global::System.IntPtr RehamoveDevice_device_get(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_battery_set")]
+  public static extern void RehamoveDevice_battery_set(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_battery_get")]
+  public static extern int RehamoveDevice_battery_get(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_mode_set")]
+  public static extern void RehamoveDevice_mode_set(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_mode_get")]
+  public static extern int RehamoveDevice_mode_get(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_current_set")]
+  public static extern void RehamoveDevice_current_set(global::System.Runtime.InteropServices.HandleRef jarg1, float jarg2);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_current_get")]
+  public static extern float RehamoveDevice_current_get(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_pulse_width_set")]
+  public static extern void RehamoveDevice_pulse_width_set(global::System.Runtime.InteropServices.HandleRef jarg1, global::System.Runtime.InteropServices.HandleRef jarg2);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_RehamoveDevice_pulse_width_get")]
+  public static extern global::System.IntPtr RehamoveDevice_pulse_width_get(global::System.Runtime.InteropServices.HandleRef jarg1);
 
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_new_RehamoveDevice")]
   public static extern global::System.IntPtr new_RehamoveDevice();
@@ -211,22 +229,58 @@ class rehamovelibPINVOKE {
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_delete_RehamoveDevice")]
   public static extern void delete_RehamoveDevice(global::System.Runtime.InteropServices.HandleRef jarg1);
 
-  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_add")]
-  public static extern int add(int jarg1, int jarg2);
-
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_open_port")]
   public static extern global::System.IntPtr open_port(string jarg1);
 
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_close_port")]
-  public static extern void close_port(global::System.Runtime.InteropServices.HandleRef jarg1);
+  public static extern int close_port(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_initialize_low_level")]
+  public static extern int initialize_low_level(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_stop_low_level")]
+  public static extern int stop_low_level(global::System.Runtime.InteropServices.HandleRef jarg1);
 
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_pulse")]
-  public static extern void pulse(global::System.Runtime.InteropServices.HandleRef jarg1, string jarg2, int jarg3, int jarg4);
+  public static extern int pulse(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2, float jarg3, int jarg4);
 
   [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_custom_pulse")]
-  public static extern void custom_pulse(global::System.Runtime.InteropServices.HandleRef jarg1, string jarg2, int jarg3, float jarg4, int jarg5, float jarg6, int jarg7, float jarg8, int jarg9, float jarg10, int jarg11, float jarg12, int jarg13, float jarg14, int jarg15, float jarg16, int jarg17, float jarg18, int jarg19, float jarg20, int jarg21, float jarg22, int jarg23, float jarg24, int jarg25, float jarg26, int jarg27, float jarg28, int jarg29, float jarg30, int jarg31, float jarg32, int jarg33, float jarg34, int jarg35);
+  public static extern int custom_pulse(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2, int jarg3, float jarg4, int jarg5, float jarg6, int jarg7, float jarg8, int jarg9, float jarg10, int jarg11, float jarg12, int jarg13, float jarg14, int jarg15, float jarg16, int jarg17, float jarg18, int jarg19, float jarg20, int jarg21, float jarg22, int jarg23, float jarg24, int jarg25, float jarg26, int jarg27, float jarg28, int jarg29, float jarg30, int jarg31, float jarg32, int jarg33, float jarg34, int jarg35);
 
-  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_battery")]
-  public static extern int battery(global::System.Runtime.InteropServices.HandleRef jarg1);
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_change_mode")]
+  public static extern int change_mode(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_set_pulse_data")]
+  public static extern int set_pulse_data(global::System.Runtime.InteropServices.HandleRef jarg1, float jarg2, int jarg3);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_run")]
+  public static extern int run(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2, float jarg3, int jarg4);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_midlevel_start")]
+  public static extern int midlevel_start(global::System.Runtime.InteropServices.HandleRef jarg1, int jarg2, float jarg3);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_midlevel_update")]
+  public static extern int midlevel_update(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_midlevel_end")]
+  public static extern int midlevel_end(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_get_version")]
+  public static extern string get_version();
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_get_battery")]
+  public static extern int get_battery(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_get_mode")]
+  public static extern int get_mode(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_get_current")]
+  public static extern float get_current(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_get_pulse_width")]
+  public static extern int get_pulse_width(global::System.Runtime.InteropServices.HandleRef jarg1);
+
+  [global::System.Runtime.InteropServices.DllImport("rehamovelib", EntryPoint="CSharp_battery_request")]
+  public static extern int battery_request(global::System.Runtime.InteropServices.HandleRef jarg1);
 }
 }

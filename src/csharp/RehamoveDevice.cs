@@ -44,16 +44,6 @@ public class RehamoveDevice : global::System.IDisposable {
     }
   }
 
-  public string port_name {
-    set {
-      rehamovelibPINVOKE.RehamoveDevice_port_name_set(swigCPtr, value);
-    } 
-    get {
-      string ret = rehamovelibPINVOKE.RehamoveDevice_port_name_get(swigCPtr);
-      return ret;
-    } 
-  }
-
   public SWIGTYPE_p_Smpt_device device {
     set {
       rehamovelibPINVOKE.RehamoveDevice_device_set(swigCPtr, SWIGTYPE_p_Smpt_device.getCPtr(value));
@@ -61,6 +51,48 @@ public class RehamoveDevice : global::System.IDisposable {
     } 
     get {
       SWIGTYPE_p_Smpt_device ret = new SWIGTYPE_p_Smpt_device(rehamovelibPINVOKE.RehamoveDevice_device_get(swigCPtr), true);
+      if (rehamovelibPINVOKE.SWIGPendingException.Pending) throw rehamovelibPINVOKE.SWIGPendingException.Retrieve();
+      return ret;
+    } 
+  }
+
+  public int battery {
+    set {
+      rehamovelibPINVOKE.RehamoveDevice_battery_set(swigCPtr, value);
+    } 
+    get {
+      int ret = rehamovelibPINVOKE.RehamoveDevice_battery_get(swigCPtr);
+      return ret;
+    } 
+  }
+
+  public int mode {
+    set {
+      rehamovelibPINVOKE.RehamoveDevice_mode_set(swigCPtr, value);
+    } 
+    get {
+      int ret = rehamovelibPINVOKE.RehamoveDevice_mode_get(swigCPtr);
+      return ret;
+    } 
+  }
+
+  public float current {
+    set {
+      rehamovelibPINVOKE.RehamoveDevice_current_set(swigCPtr, value);
+    } 
+    get {
+      float ret = rehamovelibPINVOKE.RehamoveDevice_current_get(swigCPtr);
+      return ret;
+    } 
+  }
+
+  public SWIGTYPE_p_uint16_t pulse_width {
+    set {
+      rehamovelibPINVOKE.RehamoveDevice_pulse_width_set(swigCPtr, SWIGTYPE_p_uint16_t.getCPtr(value));
+      if (rehamovelibPINVOKE.SWIGPendingException.Pending) throw rehamovelibPINVOKE.SWIGPendingException.Retrieve();
+    } 
+    get {
+      SWIGTYPE_p_uint16_t ret = new SWIGTYPE_p_uint16_t(rehamovelibPINVOKE.RehamoveDevice_pulse_width_get(swigCPtr), true);
       if (rehamovelibPINVOKE.SWIGPendingException.Pending) throw rehamovelibPINVOKE.SWIGPendingException.Retrieve();
       return ret;
     } 
