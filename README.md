@@ -173,25 +173,25 @@ All of the remaining functions require that the Rehamove object is correctly ini
 	* The length of the pulse, **in microseconds (us)**.
 
 * `r.custom_pulse(channel_name, points_array)`: **Low-level mode only.** Sends a single pulse with a custom waveform. *Returns 0 on success, -1 on failure.* Takes in two arguments:
-	* The output channel (see **pulse()** for explanation of the options).
+	* The output channel (see `pulse()` for explanation of the options).
 	* An array of tuples, each tuple having two elements (a current (mA), and a pulse_width (us)). The custom waveform can support a **maximum of 16 points**. Sending an array with more than 16 points will only execute the first 16 points, and sending an array with less than 16 points will automatically create empty points (0.0, 0) to fill in the leftover number.
 
 * `r.set_pulse(current, pulse_width)`: **Used in mid-level mode only, but can be called at any time.** Sets the pulse parameters for what will be used in mid-level mode. *Returns 0 on success, -1 on failure.* Takes in two arguments:
     * The current intensity, **in milliAmperes (mA)**.
     * The length of the pulse, **in microseconds (us)**.
 
-* `r.run(channel_name, period, total_milliseconds)`: **Mid-level mode only.** Starts Rehamove stimulation that sends **the pulse set by set_pulse()**. In this function, mid-level stimulation is automatically initialized, and automatically stopped at the end. *Returns 0 on success, -1 on failure.* Takes in three arguments:
-    * The output channel (see **pulse()** for explanation of the options).
+* `r.run(channel_name, period, total_milliseconds)`: **Mid-level mode only.** Starts Rehamove stimulation that sends **the pulse set by `set_pulse()`**. In this function, mid-level stimulation is automatically initialized, and automatically stopped at the end. *Returns 0 on success, -1 on failure.* Takes in three arguments:
+    * The output channel (see `pulse()` for explanation of the options).
     * The period, **in milliseconds (ms)**. A pulse will be sent every *period* ms, starting at 0ms.
     * The total time of stimulation, **in milliseconds (ms)**.
 
-* `r.start(channel_name, period)`: **Mid-level mode only; in combination with update() and end().** Starts Rehamove stimulation that sends **the pulse set by set_pulse()**. In this function, mid-level stimulation is automatically initialized. A keep-alive signal **(done by update())** must manually be called at least every two seconds; otherwise stimulation stops. Also, user must manually call **end()** at the end of the stimulation to properly stop mid-level stimulation (necessary if intending to switch back to low-level stimulation mode. *Returns 0 on success, -1 on failure.* Takes in two arguments:
+* `r.start(channel_name, period)`: **Mid-level mode only; in combination with update() and end().** Starts Rehamove stimulation that sends **the pulse set by `set_pulse()`**. In this function, mid-level stimulation is automatically initialized. A keep-alive signal (done by `update()`) must manually be called at least every two seconds; otherwise stimulation stops. Also, user must manually call `end()` at the end of the stimulation to properly stop mid-level stimulation (necessary if intending to switch back to low-level stimulation mode. *Returns 0 on success, -1 on failure.* Takes in two arguments:
     * The output channel (see **pulse()** for explanation of the options).
     * The period, **in milliseconds (ms)**. A pulse will be sent every *period* ms, starting at 0ms.
 
-** `r.update()`: **Mid-level mode only; in combination with start() and end().** Sends a keep-alive signal for any mid-level stimulation initialized by **start()**. This signal must be sent at least once every two seconds; otherwise that mid-level stimulation will stop. *Returns 0 on success, -1 on failure.* Takes in no arguments.
+* `r.update()`: **Mid-level mode only; in combination with `start()` and `end()`.** Sends a keep-alive signal for any mid-level stimulation initialized by `start()`. This signal must be sent at least once every two seconds; otherwise that mid-level stimulation will stop. *Returns 0 on success, -1 on failure.* Takes in no arguments.
 
-** `r.end()`: **Mid-level mode only; in combination with start() and update().** Stops the mid-level stimulation initialized by **start()**. This signal must be sent at the end of the stimulation to properly stop mid-level stimulation, especially when switching back to low-level mode. *Returns 0 on success, -1 on failure.* Takes in no arguments.
+* `r.end()`: **Mid-level mode only; in combination with `start()` and `update()`.** Stops the mid-level stimulation initialized by `start()`. This signal must be sent at the end of the stimulation to properly stop mid-level stimulation, especially when switching back to low-level mode. *Returns 0 on success, -1 on failure.* Takes in no arguments.
 
 * The connection port **automatically closes** open exiting the Python application.
 
@@ -200,7 +200,7 @@ All of the remaining functions require that the Rehamove object is correctly ini
 The supported functionality is almost entirely the same as for Python (see section for Python). 
 
 Differences:
-* `r.battery()`: Queries the device for the battery percentage. Currently this is returned as a value (integer).
+
 * `r.close()`: Closes the port (assuming that `r` is a Rehamove object created when opening the port. Unlike in the Python library, the port **does NOT automatically close** when the C# execution ends. The port must be manually closed with this function. It is possible to use Unity3D's `onApplicationQuit()` method to call this function automatically when the Unity3D program ends.
 
 ## 4. How to build/compile our libraries from source
@@ -400,6 +400,14 @@ This means:
 Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 
 ## 8. Update History
+
+8-26-2019 Version 1.6 is out for Python, on Linux AMD64 and Windows AMD64
+- Added functionality for mid-level stimulation
+    - change_mode() to change between low-level stimulation mode (automatically entered by default) and mid-level stimulation mode
+    - set_pulse() to pre-set the pulse parameters for mid-level stimulation
+    - info() to view the active mode, as well as the pre-set pulse parameters
+    - run() to automatically start and end mid-level stimulation for a period of time
+    - start(), update(), and end() to manually handle mid-level stimulation
 
 8-22-2019 version 1.5 is out
 - Added callable function version() to get the version of the Python-side and C-side of the current library.
