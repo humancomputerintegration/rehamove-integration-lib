@@ -388,6 +388,9 @@ This is a list of known bugs/features in our libraries that we hope to fix and/o
 
 This library was made by Aaron Tang with the help of Pedro Lopes. Feel free to contact us if you have any questions, comments, or suggestions!
 
+![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/authors.jpg)
+
+
 ## 7. License (not for commercial use)
 
 This project is licensed via Creative Commons Attribution-NonCommercial 2.0 Generic (CC BY-NC 2.0). 
