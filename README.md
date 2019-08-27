@@ -379,17 +379,14 @@ Both of the output DLLs (`rehamovelib.dll` and `UnityRehamove.dll`) can be impor
 
 This is a list of known bugs/features in our libraries that we hope to fix and/or implement soon. Please feel free to contact us if you find more!
 
-- C#: Timing is inconsistent, and some pulses may be dropped if pulses are sent too quickly.
-- C#: Sparse error handling. 
 - C# in Unity3D: The port does not automatically close. Please use Unity3D's `onApplicationQuit()` method to call our library's `close()` function.
-- Python on Windows: Sometimes when disconnecting and reconnecting the USB device, the Rehamove object initialization (e.g. **r = Rehamove("COM3")**) will fail with an **"Unsuccessful device initialization response!"**. Subsequent initializations should succeed, so this can be worked around by trying to initialize the Rehamove object again.
+- C#/Python on Windows: Sometimes when disconnecting and reconnecting the USB device, the Rehamove object initialization (e.g. **r = Rehamove("COM3")**) will fail with an **"Unsuccessful device initialization response!"**. Subsequent initializations should succeed, so this can be worked around by trying to initialize the Rehamove object again.
 
 ## 6. Contact
 
 This library was made by Aaron Tang with the help of Pedro Lopes. Feel free to contact us if you have any questions, comments, or suggestions!
 
-![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/authors.jpg)
-
+![authors_image](extra/authors.jpg)
 
 ## 7. License (not for commercial use)
 
