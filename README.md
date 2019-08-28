@@ -202,6 +202,7 @@ The supported functionality is almost entirely the same as for Python (see secti
 Differences:
 
 * `r.close()`: Closes the port (assuming that `r` is a Rehamove object created when opening the port. Unlike in the Python library, the port **does NOT automatically close** when the C# execution ends. The port must be manually closed with this function. It is possible to use Unity3D's `onApplicationQuit()` method to call this function automatically when the Unity3D program ends.
+* The `r.custom_pulse(channel_name, points_array)` function currently does not exist in the C# implementation.
 
 ## 4. How to build/compile our libraries from source
 
@@ -214,25 +215,22 @@ Install SWIG (you may have to also download PCRE, `configure`, `make`, and `make
 
 ### 4.1 Python
 
-#### 4.1.1 Python on Linux (64 bit architectures, i.e., AMD64)
-
-The files needed include:
+The files needed for building include:
 
 * `rehamovelib.c`: Our functions in C that call functions from Hasomed's existing C library
 * `rehamovelib.i`: An interface file of function declarations used for SWIG wrapper generation
 * `rehamove.py`: Our own Python wrapper to run on top of SWIG's generated wrapper
 
-Next, we generated the shared library file by invoking SWIG, compiling, and then linking our libraries. We called the following build script in the terminal:
+See the [src directory](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/src/python) for these source files for Python.
 
-```
-swig -python rehamovelib.i;
+#### 4.1.1 Python on Linux (64 bit architectures, i.e., AMD64)
 
-gcc -c rehamovelib.c -fPIC -I ../../../library/smpt_rm3_gcc_linux_x86_amd64_static/include/low-level/ -I ../../../library/smpt_rm3_gcc_linux_x86_amd64_static/include/general/;
+We generated the shared library file by:
+1. Invoking SWIG
+2. Compiling the C source files
+3. Linking our libraries with Hasomed's precompiled library 
 
-gcc -c rehamovelib_wrap.c -fPIC -I ../../../library/smpt_rm3_gcc_linux_x86_amd64_static/include/low-level/ -I ../../../library/smpt_rm3_gcc_linux_x86_amd64_static/include/general/ -I /usr/include/python2.7 ;
-
-ld -shared rehamovelib.o rehamovelib_wrap.o -o _rehamovelib.so -L ../../../library/smpt_rm3_gcc_linux_x86_amd64_static/lib/ -lsmpt
-```
+See our [example](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/python/linux_amd64/build.sh) for a build script in the terminal. 
 
 The shared library output, `_rehamovelib.so`, can be included with the wrappers (`rehamovelib.py` and `rehamove.py`) for final use.
 
@@ -247,16 +245,7 @@ Some notes:
 
 #### 4.1.2 Python on Linux for ARM architectures
 
-We tested our project on a Raspberry Pi 3 running the Raspbian operating system. The build process here is very similar to that of Python on Linux AMD64, with some slight differences based on this architecture. Here is an example of the modified build script:
-```
-swig -python rehamovelib.i;
-
-gcc -c rehamovelib.c -fPIC -I ../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_gcc_linux_arm_eabihf_static/include/low-level/ -I ../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_gcc_linux_arm_eabihf_static/include/general/;
-
-gcc -c rehamovelib_wrap.c -fPIC -I ../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_gcc_linux_arm_eabihf_static/include/low-level/ -I ../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_gcc_linux_arm_eabihf_static/include/general/ -I /usr/include/python2.7 ;
-
-ld -shared rehamovelib.o rehamovelib_wrap.o -o _rehamovelib.so -L ../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_gcc_linux_arm_eabihf_static/lib/ -lsmpt -L /usr/lib/gcc/arm-linux-gnueabihf/6 -lgcc
-```
+We tested our project on a Raspberry Pi 3 running the Raspbian operating system. The build process here is very similar to that of Python on Linux AMD64, with some slight differences based on this architecture. We have an [example build script](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/python/linux_ARM/build.sh), but it is not up-to-date with version 1.6, so it is better to notice to use the [Python Linux AMD64 build script example](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/python/linux_amd64/build.sh), and take note of the differences listed below.
 
 The shared library output, `_rehamovelib.so`, can be included with the wrappers (`rehamovelib.py` and `rehamove.py`) for final use.
 
@@ -264,11 +253,11 @@ Some notes:
 
  SWIG can compile for several languages (here we use the `-python` flag). It takes an interface file as input (here `rehamovelib.i`), and generates wrapper files.
 * The `-fPIC` flag is used to specify position-independent code, since we are building a shared library.
-* The Hasomed C library we use is the version: `smpt_rm3_gcc_linux_arm_eabihf_static`.
+* **(Difference from Linux build):** The Hasomed C library we use is the version: `smpt_rm3_gcc_linux_arm_eabihf_static`.
 * When compiling, we use the `-I` flag to include paths to the C header files.
 * Additionally, we include paths to the Python header files.
 * When linking, we use the `-L` flag we include the path to the precompiled C library.
-* In the linking step, we now needed to also link to a GCC library that handles floating point numbers. This could possibly be because the ARM and AMD64 architectures handle floating point calculations differently.
+* **(Difference from Linux build):** In the linking step, we now needed to also link to a GCC library that handles floating point numbers. This could possibly be because the ARM and AMD64 architectures handle floating point calculations differently.
 
 #### 4.1.3 Python on MacOS (64 bit architectures, i.e., AMD64)
 
@@ -288,13 +277,7 @@ Notes for MacOS build process:
 
 We tested our build here on a Windows 10 system. The starting files are the same as in Python for Linux AMD64.
 
-In order to access the precompiled C library for Windows, we needed to build using the Microsoft Visual C++ compiler (MSVC). After downloading Visual Studio 2017, we compiled using the developer command line tool: `x64 Native Tools Command Prompt for VS 2017`. An example of the build batch script is:
-
-```
-swig -python rehamovelib.i
-
-cl /LD /MD rehamovelib.c rehamovelib_wrap.c /Fe_rehamovelib.pyd /I "C:/Users/Agggron/AppData/Local/Programs/Python/Python37/include" /I "C:/Users/Agggron/Documents/UCHICAGO/SPRING_2019/rehamove-library/rehamove-library/RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/include/low-level" /I "C:/Users/Agggron/Documents/UCHICAGO/SPRING_2019/rehamove-library/rehamove-library/RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/include/general" /link "C:/Users/Agggron/Documents/UCHICAGO/SPRING_2019/rehamove-library/rehamove-library/RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/lib/libsmpt.lib" "C:/Users/Agggron/AppData/Local/Programs/Python/Python37/libs/python37.lib"
-```
+In order to access the precompiled C library for Windows, we needed to build using the Microsoft Visual C++ compiler (MSVC). After downloading Visual Studio 2017, we compiled using the developer command line tool: `x64 Native Tools Command Prompt for VS 2017`. We provide an [example](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/python/windows_amd64/build.bat) of the build batch script. We also include eamples for building for Python 2, and for 32-bit Python 3 installations.
 
 The shared library output, `_rehamovelib.pyd`, can be included with the wrappers (`rehamovelib.py` and `rehamove.py`) for final use.
 
@@ -317,38 +300,7 @@ We performed our build here on a Windows 10 system. The files needed include:
 
 In order to access Hasomed's precompiled C library for Windows, we needed to build using the Microsoft Visual C++ compiler (MSVC). After downloading Visual Studio 2017, we compiled using the developer command line tool: `x64 Native Tools Command Prompt for VS 2017`. 
 
-For integration with Unity3D, we realized we needed two DLLs: one that links to the library functions, and another that can integrate with Unity3D. The following batch script (run from the above-mentioned command line tool) creates the first DLL and prepares for the second DLL:
-
-```
-swig -csharp rehamovelib.i
-
-cl /LD /MD rehamovelib.c rehamovelib_wrap.c /Ferehamovelib.dll /I ../../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/include/low-level/ /I ../../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/include/general /link ../../RehaMove3_ScienceMode3/smpt_rm3_V3.2.4/library/smpt_rm3_msvc2015_x86_amd64_static/lib/libsmpt.lib
-
-echo }>backspace.cs
-
-copy rehamovelib.cs temp.cs
-echo namespace UnityRehamove {>rehamovelib.cs
-type temp.cs >> rehamovelib.cs
-type backspace.cs >> rehamovelib.cs
-
-copy rehamovelibPINVOKE.cs temp.cs
-echo namespace UnityRehamove {>rehamovelibPINVOKE.cs
-type temp.cs >> rehamovelibPINVOKE.cs
-type backspace.cs >> rehamovelibPINVOKE.cs
-
-copy RehamoveDevice.cs temp.cs
-echo namespace UnityRehamove {>RehamoveDevice.cs
-type temp.cs >> RehamoveDevice.cs
-type backspace.cs >> RehamoveDevice.cs
-
-copy SWIGTYPE_p_Smpt_device.cs temp.cs
-echo namespace UnityRehamove {>SWIGTYPE_p_Smpt_device.cs
-type temp.cs >> SWIGTYPE_p_Smpt_device.cs
-type backspace.cs >> SWIGTYPE_p_Smpt_device.cs
-
-del temp.cs
-del backspace.cs
-```
+For integration with Unity3D, we realized we needed two DLLs: one that links to the library functions, and another that can integrate with Unity3D. We have an [example batch script](https://github.com/humancomputerintegration/rehamove-integration-lib/blob/master/src/csharp/build.bat) that creates the first DLL and prepares for the second DLL (run from the above-mentioned command line tool).
 
 Some notes:
 
@@ -363,12 +315,13 @@ The first part of the batch script creates the output `rehamovelib.dll`. The sec
 We then performed the following steps to create the second DLL that interfaces with Unity3D:
 
 * Create a new project in Visual Studio 2017. We will select `Visual C# => Class Library (.NET Framework)` to create a project for a C# DLL.
-* We add the files to the solution. In the `Solution Explorer`, right-click the solution name, go to `Add`, then `Existing Item`, followed by choosing all of the .cs files in our build so far. There should be five of them: 
+* We add the files to the solution. In the `Solution Explorer`, right-click the solution name, go to `Add`, then `Existing Item`, followed by choosing all of the .cs files in our build so far. There should be the following: 
 	* `rehamove.cs`
 	* `rehamovelib.cs`
 	* `rehamovelibPINVOKE.cs`
 	* `RehamoveDevice.cs`
 	* `SWIGTYPE_p_Smpt_device.cs` 
+    * `SWIGTYPE_p_uint16_t.cs`
 * Add a reference to the UnityEngine DLL. To do this, in the `Solution Explorer`, I right-clicked `References`, clicked `Add Reference` (opening up the `Reference Manager`), and then added in a reference to the `UnityEngine.dll` path location. For me, the path was: `C:\Program Files\Unity\Hub\Editor\2019.1.2f1\Editor\Data\Managed\UnityEngine.dll`
 * Make sure that all of the files are under the same namespace (here `UnityRehamove`). This should be done by the previous batch script.
 * Perform the build! At the top of Visual Studio 2017, go to `Build`, then `Build Solution`. You should generate the output, `UnityRehamove.dll`.
@@ -400,6 +353,9 @@ This means:
 Full LICENSE AT: https://creativecommons.org/licenses/by-nc/2.0/
 
 ## 8. Update History
+
+8-27-2019 Version 1.6 is out for C# (Windows AMD64)
+- Functionality for mid-level stimulation integrated in Unity3D-importable DLLs
 
 8-26-2019 Version 1.6 is out for Python, on Linux AMD64 and Windows AMD64
 - Added functionality for mid-level stimulation
