@@ -2,7 +2,7 @@
 
 This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
-![image](https://github.com/humancomputerintegration/rehamove-integration-lib/tree/master/extra/video.png)
+![image](extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
 
 **What does this do?** The RehaMove 3 is a medical device that sends out electrical signals, which can be used clinically and in research, e.g. by doing functional electrical stimulation (FES) and/or electrical muscle stimulation (EMS). Existing documentation is provided by the manufacturer Hasomed to control the RehaMove via C code using a precompiled C library. **Instead, our libraries extend this functionality to Python and C#**, allowing the user to send commands in these other programming languages. This can be used for rapid prototyping, and/or integration with engines such as Unity3D.
