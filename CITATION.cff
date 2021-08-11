@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use/remix this software, please cite it as below."
+authors:
+- family-names: "Lopes"
+  given-names: "Pedro"
+  orcid: "https://orcid.org/0000-0001-6527-7084"
+- family-names: "Tang"
+  given-names: "Aaron"
+title: "Rehamove Integration Lib"
+version: 1.6
+doi: lab.plopes.org/rehalib.html
+date-released: 2019-07-09
+url: "lab.plopes.org/rehalib.html"
