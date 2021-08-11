@@ -1,6 +1,13 @@
-# Rehamove Integration Lib: Python and C# Extensions for RehaMove 3 (v1.6)
+# EMS Integration Lib: Python and C# Extensions for Hasomed's RehaMove 1, Rehamove 3 and OpenEMSstim (v1.6)
 
-This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with the RehaMove 3 medical device. You can find the project's official page [here](https://lab.plopes.org/rehalib).
+This is the **rehamoveIntegrationLib**, a collection of libraries (for non-commercial use only) that interface with distinct electrical/functional muscle stimulation units (known as EMS or FES):
+
+* Hasomed's RehaMove 3 EMS/FES device (here!) 
+* Hasomed's RehaMove 1 EMS/FES device (comming soon!) 
+* [openEMSstim](https://github.com/PedroLopes/openEMSstim) controllers (not a stimulator, just an intensity adjuster)
+
+
+You can find the project's official page [here](https://lab.plopes.org/rehalib).
 
 ![image](extra/video.png)
 (click [here](https://youtu.be/IyL0C_fEE2A) for our youtube video)
